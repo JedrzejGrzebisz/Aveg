@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">USTAWIENIA</string>
+    <string name="data">DANE SENSE-HAT</string>
+    <string name="weatherCharts">WYKRESY POGODOWE</string>
+    <string name="rpyCharts">WYKRESY POłOŻENIA</string>
+    <string name="joystick">STAN JOYSTICKA</string>
+    <string name="ledMatrix">MATRYCA LED</string>
+</resources>

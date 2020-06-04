@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Avec</string>
+    <string name="colorHint">red/green/blue/orange/white</string>
+</resources>
