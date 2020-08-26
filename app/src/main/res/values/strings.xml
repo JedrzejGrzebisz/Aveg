@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Avec</string>
     <string name="colorHint">red/green/blue/orange/white</string>
+    <string name="startBtn">START</string>
+    <string name="stopBtn">STOP</string>
+    <string name="optionsBtn">OPCJE</string>
 </resources>

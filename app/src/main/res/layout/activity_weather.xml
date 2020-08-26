@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".WeatherActivity">
 
     <LinearLayout
         android:id="@+id/linearLayoutWeather"
@@ -46,7 +47,7 @@
                 android:layout_weight="1"
                 android:background="#8BC34A"
                 android:onClick="btns_onClick"
-                android:text="START" />
+                android:text="@string/startBtn" />
 
             <Button
                 android:id="@+id/stopWChartsBtn"
@@ -55,7 +56,7 @@
                 android:layout_weight="1"
                 android:background="#F44336"
                 android:onClick="btns_onClick"
-                android:text="STOP" />
+                android:text="@string/stopBtn" />
 
 
             <Button
@@ -66,7 +67,7 @@
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 android:onClick="btns_onClick"
-                android:text="OPCJE" />
+                android:text="@string/optionsBtn" />
         </LinearLayout>
 
         <LinearLayout
