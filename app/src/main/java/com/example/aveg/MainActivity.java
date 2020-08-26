@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-//test do gita
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -31,6 +31,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, SingleLedActivity.class));
+            }
+        });
+
+        findViewById(R.id.goToRPYChartsBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, RpyActivity.class));
             }
         });
 

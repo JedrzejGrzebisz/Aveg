@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".RpyActivity">
 
     <LinearLayout
-        android:id="@+id/linearLayoutWeather"
+        android:id="@+id/linearLayoutRpy"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="15dp"
@@ -20,18 +21,18 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/weatherName"
+            android:id="@+id/rpyName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimaryDark"
-            android:text="@string/weatherCharts"
+            android:text="WYKRESY RPY"
             android:textAlignment="center"
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold" />
 
         <LinearLayout
-            android:id="@+id/linearLayoutWeatherBtns"
+            android:id="@+id/linearLayoutRpyBtns"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -39,58 +40,44 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/startWChartsBtn"
+                android:id="@+id/startRpyChartsBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
                 android:layout_weight="1"
                 android:background="#8BC34A"
-                android:onClick="btns_onClick"
                 android:text="START" />
 
             <Button
-                android:id="@+id/stopWChartsBtn"
+                android:id="@+id/stopRpyChartsBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="#F44336"
-                android:onClick="btns_onClick"
                 android:text="STOP" />
 
-
             <Button
-                android:id="@+id/goToWOptionsBtn"
+                android:id="@+id/goToRpyOptionsBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
-                android:background="@color/colorPrimary"
-                android:onClick="btns_onClick"
+                android:background="@color/colorPrimaryDark"
                 android:text="OPCJE" />
+
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayoutWGraph"
+            android:id="@+id/linearLayoutRpyGraph"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <com.jjoe64.graphview.GraphView
-                android:id="@+id/temperatureDataGraph"
+                android:id="@+id/rpyDataGraph"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/graphHeight"
-                android:layout_marginBottom="15dp" />
+                android:layout_height="300dp" />
 
-            <com.jjoe64.graphview.GraphView
-                android:id="@+id/pressureDataGraph"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/graphHeight"
-                android:layout_marginBottom="15dp" />
-
-            <com.jjoe64.graphview.GraphView
-                android:id="@+id/humidityDataGraph"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/graphHeight" />
         </LinearLayout>
 
     </LinearLayout>

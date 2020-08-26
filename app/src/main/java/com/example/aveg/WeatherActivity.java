@@ -60,7 +60,7 @@ public class WeatherActivity extends AppCompatActivity {
     private final double humidityDataGraphMaxY = 100.0d;
     private final double humidityDataGraphMinY = 0.0d;
 
-    private AlertDialog.Builder configAlterDialog;
+    private AlertDialog.Builder configAlertDialog;
 
     /* BEGIN request timer */
     private RequestQueue queue;
@@ -131,26 +131,30 @@ public class WeatherActivity extends AppCompatActivity {
         pressureDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("t[s]");
         humidityDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("t[s]");
 
+        /* END initialize GraphView */
+        queue = Volley.newRequestQueue(WeatherActivity.this);
+    }
 
-        /* BEGIN config alter dialog */
-        configAlterDialog = new AlertDialog.Builder(WeatherActivity.this);
-        configAlterDialog.setTitle("Pobieranie danych zostanie zatrzymane");
-        configAlterDialog.setIcon(android.R.drawable.ic_dialog_alert);
-        configAlterDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+    /* BEGIN config alert dialog */
+    public void dialogAlertShow() {
+        configAlertDialog = new AlertDialog.Builder(WeatherActivity.this);
+        configAlertDialog.setTitle("Pobieranie danych zostanie zatrzymane");
+        configAlertDialog.setIcon(android.R.drawable.ic_dialog_alert);
+        configAlertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 stopRequestTimerTask();
                 openWeatherOptions();
             }
         });
-        configAlterDialog.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+        configAlertDialog.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                finish();
+                dialog.dismiss();
             }
         });
-
-        /* END initialize GraphView */
-        queue = Volley.newRequestQueue(WeatherActivity.this);
+        configAlertDialog.setCancelable(false);
+        configAlertDialog.show();
     }
+    /* END config alter dialog */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent dataIntent) {
@@ -170,7 +174,7 @@ public class WeatherActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.goToWOptionsBtn: {
                 if (requestTimer != null)
-                   configAlterDialog.show();
+                    dialogAlertShow();
                 else
                     openWeatherOptions();
                 break;

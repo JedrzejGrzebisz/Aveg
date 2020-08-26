@@ -24,6 +24,7 @@
         <activity android:name=".TextLedActivity" />
         <activity android:name=".SingleLedActivity" />
         <activity android:name=".SettingsActivity" />
+        <activity android:name=".RpyActivity" />
     </application>
 
 </manifest>
