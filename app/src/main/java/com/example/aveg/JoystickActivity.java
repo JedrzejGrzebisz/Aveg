@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.PointsGraphSeries;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +33,7 @@ import java.util.TimerTask;
 
 import static java.lang.Double.isNaN;
 
-public class RpyActivity extends AppCompatActivity {
+public class JoystickActivity extends AppCompatActivity {
 
     /* BEGIN config data */
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
@@ -39,20 +41,19 @@ public class RpyActivity extends AppCompatActivity {
     /* END config data */
 
     /* BEGIN widgets */
-    private GraphView rpyDataGraph;
+    private GraphView joystickDataGraph;
+    private TextView centerClickNb;
 
-    private LineGraphSeries<DataPoint> rollDataSeries;
-    private LineGraphSeries<DataPoint> pitchDataSeries;
-    private LineGraphSeries<DataPoint> yawDataSeries;
+    private PointsGraphSeries<DataPoint> joystickDataSeries;
 
     //max and min ranges for x and y axes
-    private final int dataGraphMaxDataPointsNumber = 1000;
+    private final int dataGraphMaxDataPointsNumber = 100;
 
-    private final double dataGraphMaxX = 25.0d;
-    private final double dataGraphMinX = 0.0d;
+    private final double dataGraphMaxX = 50;
+    private final double dataGraphMinX = -50;
 
-    private final double rpyDataGraphMaxY = 3.15d;
-    private final double rpyDataGraphMinY = -3.15d;
+    private final double rpyDataGraphMaxY = 50;
+    private final double rpyDataGraphMinY = -50;
 
     private AlertDialog.Builder configAlertDialog;
 
@@ -70,60 +71,60 @@ public class RpyActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rpy);
+        setContentView(R.layout.activity_joystick);
 
         Intent intent = getIntent();
         Bundle configBundle = intent.getExtras();
 
+        //Initializing textView of center click nb
+        centerClickNb = (TextView) findViewById(R.id.centerClickNb);
+
         /* BEGIN initialize GraphView */
         // https://github.com/jjoe64/GraphView/wiki
 
-        //Initializing roll, pitch, yaw graph and setting ranges
+        //Initializing joystick graph and setting ranges
 
-        rpyDataGraph = (GraphView) findViewById(R.id.rpyDataGraph);
-        //Creating 3 GraphSeries
-        rollDataSeries = new LineGraphSeries<>(new DataPoint[]{});
-        pitchDataSeries = new LineGraphSeries<>(new DataPoint[]{});
-        yawDataSeries = new LineGraphSeries<>(new DataPoint[]{});
-        //Adding 3 GraphSeries to one GraphView
-        rpyDataGraph.addSeries(rollDataSeries);
-        rpyDataGraph.addSeries(pitchDataSeries);
-        rpyDataGraph.addSeries(yawDataSeries);
+        joystickDataGraph = (GraphView) findViewById(R.id.joystickDataGraph);
+        //Creating 1 PointsGraphSeries
+        joystickDataSeries = new PointsGraphSeries<>(new DataPoint[]{});
+        //Adding 1 PointsGraphSeries to one GraphView
+        joystickDataGraph.addSeries(joystickDataSeries);
         //Setting ranges for GraphView
-        rpyDataGraph.getViewport().setXAxisBoundsManual(true);
-        rpyDataGraph.getViewport().setMinX(dataGraphMinX);
-        rpyDataGraph.getViewport().setMaxX(dataGraphMaxX);
-        rpyDataGraph.getViewport().setYAxisBoundsManual(true);
-        rpyDataGraph.getViewport().setMinY(rpyDataGraphMinY);
-        rpyDataGraph.getViewport().setMaxY(rpyDataGraphMaxY);
+        joystickDataGraph.getViewport().setXAxisBoundsManual(true);
+        joystickDataGraph.getViewport().setMinX(dataGraphMinX);
+        joystickDataGraph.getViewport().setMaxX(dataGraphMaxX);
+        joystickDataGraph.getViewport().setYAxisBoundsManual(true);
+        joystickDataGraph.getViewport().setMinY(rpyDataGraphMinY);
+        joystickDataGraph.getViewport().setMaxY(rpyDataGraphMaxY);
 
         //Setting chart title
-        rpyDataGraph.setTitle("Położenie kątowe (RPY)");
+        joystickDataGraph.setTitle("Joystick");
 
         //Setting axes titles
-        rpyDataGraph.getGridLabelRenderer().setVerticalAxisTitle("RPY[rad]");
-        rpyDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("t[s]");
+        joystickDataGraph.getGridLabelRenderer().setVerticalAxisTitle("y");
+        joystickDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("x");
 
-        //Setting legend
-        rollDataSeries.setTitle("Roll");
-        pitchDataSeries.setTitle("Pitch");
-        yawDataSeries.setTitle("Yaw");
-        rpyDataGraph.getLegendRenderer().setVisible(true);
-        rpyDataGraph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
-
-        //Setting GraphSeries color
-        rollDataSeries.setColor(Color.RED);
-        pitchDataSeries.setColor(Color.BLUE);
-        yawDataSeries.setColor(Color.GREEN);
+        //Setting GraphSeries color and shape
+        joystickDataSeries.setColor(Color.GREEN);
+        joystickDataSeries.setShape(PointsGraphSeries.Shape.POINT);
 
         /* END initialize GraphView */
-        queue = Volley.newRequestQueue(RpyActivity.this);
+        queue = Volley.newRequestQueue(JoystickActivity.this);
 
+        //Start timer
+        //startRequestTimer();
+    }
+
+    @Override
+    public void onBackPressed() {
+        stopRequestTimerTask();
+        finish();
     }
 
     /* BEGIN config alert dialog */
+    /*
     public void dialogAlertShow() {
-        configAlertDialog = new AlertDialog.Builder(RpyActivity.this);
+        configAlertDialog = new AlertDialog.Builder(JoystickActivity.this);
         configAlertDialog.setTitle("Pobieranie danych zostanie zatrzymane");
         configAlertDialog.setIcon(android.R.drawable.ic_dialog_alert);
         configAlertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -139,9 +140,10 @@ public class RpyActivity extends AppCompatActivity {
         });
         configAlertDialog.setCancelable(false);
         configAlertDialog.show();
-    }
+    }*/
     /* END config alter dialog */
 
+    /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent dataIntent) {
         super.onActivityResult(requestCode, resultCode, dataIntent);
@@ -155,8 +157,9 @@ public class RpyActivity extends AppCompatActivity {
             assert sampleTimeText != null;
             sampleTime = Integer.parseInt(sampleTimeText);
         }
-    }
+    }*/
 
+    /*
     public void btnsRpy_onClick(View v) {
         switch (v.getId()) {
             case R.id.goToRpyOptionsBtn: {
@@ -178,12 +181,13 @@ public class RpyActivity extends AppCompatActivity {
                 // do nothing
             }
         }
-    }
+    }*/
 
     private String getURL(String ip) {
-        return ("http://" + ip + "/" + CommonData.FILE_NAME2);
+        return ("http://" + ip + "/" + CommonData.FILE_NAME3);
     }
 
+    /*
     private void openWeatherOptions() {
         Intent openConfigIntent = new Intent(RpyActivity.this, WeatherOptionsActivity.class);
         Bundle configBundle = new Bundle();
@@ -191,7 +195,7 @@ public class RpyActivity extends AppCompatActivity {
         configBundle.putInt(CommonData.CONFIG_SAMPLE_TIME, sampleTime);
         openConfigIntent.putExtras(configBundle);
         startActivityForResult(openConfigIntent, CommonData.REQUEST_CODE_CONFIG);
-    }
+    }*/
 
     /**
      * @param response IoT server JSON response as string
@@ -199,7 +203,7 @@ public class RpyActivity extends AppCompatActivity {
      * @retval new chart data
      */
 
-    private double getRawDataFromResponse_roll(String response) {
+    private double getRawDataFromResponse_xAxis(String response) {
         JSONObject jObject;
         double x = Double.NaN;
 
@@ -212,35 +216,35 @@ public class RpyActivity extends AppCompatActivity {
         }
         // Read chart data form JSON object
         try {
-            x = (double)jObject.get("Roll");
+            x = (double)jObject.get("xAxis");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return x;
     }
 
-    private double getRawDataFromResponse_pitch(String response) {
+    private double getRawDataFromResponse_yAxis(String response) {
         JSONObject jObject;
-        double x = Double.NaN;
+        double y = Double.NaN;
 
         // Create generic JSON object form string
         try {
             jObject = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
-            return x;
+            return y;
         }
 
         // Read chart data form JSON object
         try {
-            x = (double) jObject.get("Pitch");
+            y = (double) jObject.get("yAxis");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return x;
+        return y;
     }
 
-    private double getRawDataFromResponse_yaw(String response) {
+    private double getRawDataFromResponse_center(String response) {
         JSONObject jObject;
         double x = Double.NaN;
 
@@ -254,7 +258,7 @@ public class RpyActivity extends AppCompatActivity {
 
         // Read chart data form JSON object
         try {
-            x = (double) jObject.get("Yaw");
+            x = (double) jObject.get("center");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -329,6 +333,7 @@ public class RpyActivity extends AppCompatActivity {
     private void errorHandling(int errorCode) {
         Toast errorToast = Toast.makeText(this, "ERROR", Toast.LENGTH_SHORT);
         errorToast.show();
+        stopRequestTimerTask();
     }
 
     /**
@@ -341,12 +346,12 @@ public class RpyActivity extends AppCompatActivity {
             requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
 
             // get raw data from JSON response
-            double rollRawData = getRawDataFromResponse_roll(response);
-            double pitchRawData = getRawDataFromResponse_pitch(response);
-            double yawRawData = getRawDataFromResponse_yaw(response);
+            double xAxisRawData = getRawDataFromResponse_xAxis(response);
+            double yAxisRawData = getRawDataFromResponse_yAxis(response);
+            double centerRawData = getRawDataFromResponse_center(response);
 
             // update chart
-            if (isNaN(rollRawData) || isNaN(pitchRawData) || isNaN(yawRawData)) {
+            if (isNaN(xAxisRawData) || isNaN(yAxisRawData) || isNaN(centerRawData)) {
                 errorHandling(CommonData.ERROR_NAN_DATA);
             }
             else {
@@ -354,12 +359,14 @@ public class RpyActivity extends AppCompatActivity {
                 // update plot series
                 double timeStamp = requestTimerTimeStamp / 1000.0; // [sec]
                 boolean scrollGraph = (timeStamp > dataGraphMaxX);
-                rollDataSeries.appendData(new DataPoint(timeStamp, rollRawData), scrollGraph, dataGraphMaxDataPointsNumber);
-                pitchDataSeries.appendData(new DataPoint(timeStamp, pitchRawData), scrollGraph, dataGraphMaxDataPointsNumber);
-                yawDataSeries.appendData(new DataPoint(timeStamp, yawRawData), scrollGraph, dataGraphMaxDataPointsNumber);
+                joystickDataSeries.appendData(new DataPoint(xAxisRawData, yAxisRawData), true, dataGraphMaxDataPointsNumber);
 
                 // refresh chart
-                rpyDataGraph.onDataChanged(true, true);
+                joystickDataGraph.onDataChanged(true, true);
+
+                //refresh number of center button clicks
+                String centerRawDataString = Double.toString(getRawDataFromResponse_center(response));
+                centerClickNb.setText(centerRawDataString);
             }
 
             // remember previous time stamp
@@ -397,4 +404,3 @@ public class RpyActivity extends AppCompatActivity {
         return (currentTime - requestTimerPreviousTime);
     }
 }
-
