@@ -46,17 +46,18 @@
 
                 <TextView
                     android:id="@+id/textViewIP"
-                    android:layout_width="17dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="IP:"
-                    android:textColor="#000000" />
+                    android:textColor="#000000"
+                    android:textSize="18sp" />
 
                 <EditText
                     android:id="@+id/userInputIPx"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="3"
                     android:ems="10"
                     android:hint="Twoje IP"
                     android:inputType="textPersonName" />
@@ -70,17 +71,18 @@
 
                 <TextView
                     android:id="@+id/textViewPort"
-                    android:layout_width="17dp"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Port:"
-                    android:textColor="#000000" />
+                    android:textColor="#000000"
+                    android:textSize="18sp" />
 
                 <EditText
                     android:id="@+id/userInputPort"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="3"
                     android:ems="10"
                     android:hint="Twój port"
                     android:inputType="textPersonName" />

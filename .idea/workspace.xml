@@ -14,22 +14,23 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_LOG_LEVEL" value="debug" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="verbose" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ecbe475e-f4f8-4c54-b13f-29221ae18d5f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/classAnalysis.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/checksums/sha1-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/CommonData.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/CommonData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/RpyActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/RpyActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/JoystickActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/JoystickActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/SettingsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,7 +74,7 @@
     <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-08-26T13:38:05.158Z" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/java/com/example/aveg" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ListViewExample" />
     <property name="settings.editor.selected.configurable" value="preferences.editor" />
   </component>
   <component name="RecentsManager">
@@ -188,38 +189,42 @@
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="379" y="168" key="AndroidCreateResourceFileDialog/0.0.1600.860@0.0.1600.860" timestamp="1598451602129" />
-    <state x="580" y="185" key="FileChooserDialogImpl" timestamp="1598516762982">
+    <state x="580" y="185" key="FileChooserDialogImpl" timestamp="1598552883623">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="580" y="185" key="FileChooserDialogImpl/0.0.1600.860@0.0.1600.860" timestamp="1598516762982" />
-    <state width="1557" height="206" key="GridCell.Tab.0.bottom" timestamp="1598525198144">
+    <state x="580" y="185" key="FileChooserDialogImpl/0.0.1600.860@0.0.1600.860" timestamp="1598552883623" />
+    <state width="1557" height="290" key="GridCell.Tab.0.bottom" timestamp="1598531602784">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="206" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1598525198144" />
-    <state width="1557" height="206" key="GridCell.Tab.0.center" timestamp="1598525198144">
+    <state width="1557" height="290" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1598531602784" />
+    <state width="1557" height="290" key="GridCell.Tab.0.center" timestamp="1598531602784">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="206" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1598525198144" />
-    <state width="1557" height="206" key="GridCell.Tab.0.left" timestamp="1598525198144">
+    <state width="1557" height="290" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1598531602784" />
+    <state width="1557" height="290" key="GridCell.Tab.0.left" timestamp="1598531602784">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="206" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1598525198144" />
-    <state width="1557" height="206" key="GridCell.Tab.0.right" timestamp="1598525198144">
+    <state width="1557" height="290" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1598531602784" />
+    <state width="1557" height="290" key="GridCell.Tab.0.right" timestamp="1598531602784">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="206" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1598525198144" />
+    <state width="1557" height="290" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1598531602784" />
     <state x="301" y="72" key="SettingsEditor" timestamp="1598447200921">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="301" y="72" key="SettingsEditor/0.0.1600.860@0.0.1600.860" timestamp="1598447200921" />
-    <state x="91" y="60" width="1416" height="676" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1598449209128">
+    <state x="91" y="60" width="1416" height="676" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1598530608705">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="91" y="60" width="1416" height="676" key="com.android.tools.idea.avdmanager.AvdListDialog/0.0.1600.860@0.0.1600.860" timestamp="1598449209128" />
+    <state x="91" y="60" width="1416" height="676" key="com.android.tools.idea.avdmanager.AvdListDialog/0.0.1600.860@0.0.1600.860" timestamp="1598530608705" />
     <state x="92" y="92" width="1416" height="676" key="com.intellij.history.integration.ui.views.SelectionHistoryDialog" timestamp="1597829416257">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="92" y="92" width="1416" height="676" key="com.intellij.history.integration.ui.views.SelectionHistoryDialog/0.0.1600.860@0.0.1600.860" timestamp="1597829416257" />
+    <state x="561" y="274" key="edit.logcat.filter.dialog.dimensions" timestamp="1598529132412">
+      <screen x="0" y="0" width="1600" height="860" />
+    </state>
+    <state x="561" y="274" key="edit.logcat.filter.dialog.dimensions/0.0.1600.860@0.0.1600.860" timestamp="1598529132412" />
     <state x="1125" y="181" width="672" height="678" key="search.everywhere.popup" timestamp="1598521365958">
       <screen x="0" y="0" width="1600" height="860" />
     </state>

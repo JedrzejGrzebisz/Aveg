@@ -112,7 +112,7 @@ public class JoystickActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(JoystickActivity.this);
 
         //Start timer
-        //startRequestTimer();
+        startRequestTimer();
     }
 
     @Override
@@ -216,7 +216,7 @@ public class JoystickActivity extends AppCompatActivity {
         }
         // Read chart data form JSON object
         try {
-            x = (double)jObject.get("xAxis");
+            x = (int) jObject.get("xAxis");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -237,7 +237,7 @@ public class JoystickActivity extends AppCompatActivity {
 
         // Read chart data form JSON object
         try {
-            y = (double) jObject.get("yAxis");
+            y = (int) jObject.get("yAxis");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -258,7 +258,7 @@ public class JoystickActivity extends AppCompatActivity {
 
         // Read chart data form JSON object
         try {
-            x = (double) jObject.get("center");
+            x = (int) jObject.get("center");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -365,8 +365,14 @@ public class JoystickActivity extends AppCompatActivity {
                 joystickDataGraph.onDataChanged(true, true);
 
                 //refresh number of center button clicks
-                String centerRawDataString = Double.toString(getRawDataFromResponse_center(response));
-                centerClickNb.setText(centerRawDataString);
+                final String centerRawDataString = Double.toString(getRawDataFromResponse_center(response));
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        centerClickNb.setText(centerRawDataString);;
+                    }
+                });
             }
 
             // remember previous time stamp
