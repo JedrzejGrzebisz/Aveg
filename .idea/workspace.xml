@@ -27,10 +27,9 @@
       <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/JoystickActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/JoystickActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/SettingsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +73,7 @@
     <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-08-26T13:38:05.158Z" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/app/src/main/java/com/example/aveg" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ListViewExample" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.editor" />
   </component>
   <component name="RecentsManager">
@@ -193,22 +192,22 @@
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="580" y="185" key="FileChooserDialogImpl/0.0.1600.860@0.0.1600.860" timestamp="1598552883623" />
-    <state width="1557" height="290" key="GridCell.Tab.0.bottom" timestamp="1598531602784">
+    <state width="1540" height="362" key="GridCell.Tab.0.bottom" timestamp="1598564822126">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="290" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1598531602784" />
-    <state width="1557" height="290" key="GridCell.Tab.0.center" timestamp="1598531602784">
+    <state width="1540" height="362" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1598564822126" />
+    <state width="1540" height="362" key="GridCell.Tab.0.center" timestamp="1598564822125">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="290" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1598531602784" />
-    <state width="1557" height="290" key="GridCell.Tab.0.left" timestamp="1598531602784">
+    <state width="1540" height="362" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1598564822125" />
+    <state width="1540" height="362" key="GridCell.Tab.0.left" timestamp="1598564822124">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="290" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1598531602784" />
-    <state width="1557" height="290" key="GridCell.Tab.0.right" timestamp="1598531602784">
+    <state width="1540" height="362" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1598564822124" />
+    <state width="1540" height="362" key="GridCell.Tab.0.right" timestamp="1598564822126">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="290" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1598531602784" />
+    <state width="1540" height="362" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1598564822126" />
     <state x="301" y="72" key="SettingsEditor" timestamp="1598447200921">
       <screen x="0" y="0" width="1600" height="860" />
     </state>

@@ -47,15 +47,22 @@ public class JoystickActivity extends AppCompatActivity {
     private PointsGraphSeries<DataPoint> joystickDataSeries;
 
     //max and min ranges for x and y axes
-    private final int dataGraphMaxDataPointsNumber = 100;
+    private final int dataGraphMaxDataPointsNumber = 10000;
 
-    private final double dataGraphMaxX = 50;
-    private final double dataGraphMinX = -50;
+    private final double dataGraphMaxX = 5;
+    private final double dataGraphMinX = -5;
 
-    private final double rpyDataGraphMaxY = 50;
-    private final double rpyDataGraphMinY = -50;
+    private final double rpyDataGraphMaxY = 5;
+    private final double rpyDataGraphMinY = -5;
 
     private AlertDialog.Builder configAlertDialog;
+
+
+    Handler handler = new Handler();
+    Runnable runnable;
+    int delay = 1000;
+    double xAxisRawDataOld;
+    double yAxisRawDataOld;
 
     /* BEGIN request timer */
     private RequestQueue queue;
@@ -65,7 +72,7 @@ public class JoystickActivity extends AppCompatActivity {
     private boolean requestTimerFirstRequest = true;
     private boolean requestTimerFirstRequestAfterStop;
     private TimerTask requestTimerTask;
-    private final Handler handler = new Handler();
+    //private final Handler handler = new Handler();
     /* END request timer */
 
     @Override
@@ -112,14 +119,33 @@ public class JoystickActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(JoystickActivity.this);
 
         //Start timer
-        startRequestTimer();
+        //startRequestTimer();
     }
 
+    @Override
+    protected void onResume() {
+        handler.postDelayed(runnable = new Runnable() {
+            public void run() {
+                handler.postDelayed(runnable, delay);
+                sendGetRequest();
+            }
+        }, delay);
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        handler.removeCallbacks(runnable); //stop handler when activity not visible
+        super.onStop();
+    }
+
+    /*
     @Override
     public void onBackPressed() {
         stopRequestTimerTask();
         finish();
     }
+    */
 
     /* BEGIN config alert dialog */
     /*
@@ -268,6 +294,7 @@ public class JoystickActivity extends AppCompatActivity {
     /**
      * @brief Starts new 'Timer' (if currently not exist) and schedules periodic task.
      */
+    /*
     private void startRequestTimer() {
         if (requestTimer == null) {
             // set a new Timer
@@ -276,12 +303,13 @@ public class JoystickActivity extends AppCompatActivity {
             initializeRequestTimerTask();
             requestTimer.schedule(requestTimerTask, 0, sampleTime);
         }
-    }
+    }*/
 
     /**
      * @brief Stops request timer (if currently exist)
      * and sets 'requestTimerFirstRequestAfterStop' flag.
      */
+    /*
     private void stopRequestTimerTask() {
         // stop the timer, if it's not already null
         if (requestTimer != null) {
@@ -289,11 +317,12 @@ public class JoystickActivity extends AppCompatActivity {
             requestTimer = null;
             requestTimerFirstRequestAfterStop = true;
         }
-    }
+    }*/
 
     /**
      * @brief Initialize request timer period task with 'Handler' post method as 'sendGetRequest'.
      */
+    /*
     private void initializeRequestTimerTask() {
         requestTimerTask = new TimerTask() {
             public void run() {
@@ -304,7 +333,7 @@ public class JoystickActivity extends AppCompatActivity {
                 });
             }
         };
-    }
+    }*/
 
     /**
      * @brief Sending GET request to IoT server using 'Volley'.
@@ -331,14 +360,39 @@ public class JoystickActivity extends AppCompatActivity {
     }
 
     private void errorHandling(int errorCode) {
-        Toast errorToast = Toast.makeText(this, "ERROR", Toast.LENGTH_SHORT);
+        Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
         errorToast.show();
-        stopRequestTimerTask();
+        //stopRequestTimerTask();
     }
 
     /**
      * @brief GET response handling - chart data series updated with IoT server data.
      */
+
+    private void responseHandling(String response) {
+
+        joystickDataSeries.resetData(new DataPoint[]{});
+
+        double xAxisRawData = getRawDataFromResponse_xAxis(response);
+        double yAxisRawData = getRawDataFromResponse_yAxis(response);
+        double centerRawData = getRawDataFromResponse_center(response);
+
+       // if (isNaN(xAxisRawData) || isNaN(yAxisRawData) || isNaN(centerRawData)) {
+        //    errorHandling(CommonData.ERROR_NAN_DATA);
+        //}
+       // else {
+
+            joystickDataSeries.appendData(new DataPoint(xAxisRawData, yAxisRawData), false, dataGraphMaxDataPointsNumber);
+            // refresh chart
+            joystickDataGraph.onDataChanged(true, true);
+
+            //refresh number of center button clicks
+            final String centerRawDataString = Double.toString(centerRawData);
+            centerClickNb.setText(centerRawDataString);
+        //}
+    }
+
+    /*
     private void responseHandling(String response) {
         if (requestTimer != null) {
             // get time stamp with SystemClock
@@ -379,11 +433,12 @@ public class JoystickActivity extends AppCompatActivity {
             requestTimerPreviousTime = requestTimerCurrentTime;
         }
     }
-
+    */
 
     /**
      * @brief Validation of client-side time stamp based on 'SystemClock'.
      */
+    /*
     private long getValidTimeStampIncrease(long currentTime) {
         // Right after start remember current time and return 0
         if (requestTimerFirstRequest) {
@@ -408,5 +463,5 @@ public class JoystickActivity extends AppCompatActivity {
 
         // Return time difference between current and previous request
         return (currentTime - requestTimerPreviousTime);
-    }
+    }*/
 }
