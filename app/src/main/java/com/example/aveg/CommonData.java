@@ -21,5 +21,6 @@ public final class CommonData {
     public final static String FILE_NAME2 = "jQuery/webApp/rpyValueRad.json";
     public final static String FILE_NAME3 = "SH_5/joystick.json";
     public final static String FILE_NAME4 = "AndroidTasks/weatherCondition.php";
+    public final static String FILE_NAME5 = "jQuery/webApp/rpyValueDeg.json";
 
 }

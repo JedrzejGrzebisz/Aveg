@@ -38,6 +38,7 @@ public class RpyActivity extends AppCompatActivity {
     /* BEGIN config data */
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
     private int sampleTime = CommonData.DEFAULT_SAMPLE_TIME;
+    private String unit = "deg";
     /* END config data */
 
     /* BEGIN widgets */
@@ -56,8 +57,8 @@ public class RpyActivity extends AppCompatActivity {
     private final double dataGraphMaxX = 25.0d;
     private final double dataGraphMinX = 0.0d;
 
-    private final double rpyDataGraphMaxY = 3.15d;
-    private final double rpyDataGraphMinY = -3.15d;
+    private final double rpyDataGraphMaxYRad = 3.2d;
+    private final double rpyDataGraphMinYRad = -3.2d;
 
     private final double rpyDataGraphMaxYDeg = 360.0d;
     private final double rpyDataGraphMinYDeg = 0.0d;
@@ -97,20 +98,14 @@ public class RpyActivity extends AppCompatActivity {
         rpyDataGraph.addSeries(rollDataSeries);
         rpyDataGraph.addSeries(pitchDataSeries);
         rpyDataGraph.addSeries(yawDataSeries);
-        //Setting ranges for GraphView
+        //Setting ranges for GraphView x axis
         rpyDataGraph.getViewport().setXAxisBoundsManual(true);
         rpyDataGraph.getViewport().setMinX(dataGraphMinX);
         rpyDataGraph.getViewport().setMaxX(dataGraphMaxX);
-        rpyDataGraph.getViewport().setYAxisBoundsManual(true);
-        rpyDataGraph.getViewport().setMinY(rpyDataGraphMinY);
-        rpyDataGraph.getViewport().setMaxY(rpyDataGraphMaxY);
-
+        //Setting ranges, axis titles and grid for GraphView(depends on unit)
+        setRangesAndTitles();
         //Setting chart title
         rpyDataGraph.setTitle("Położenie kątowe (RPY)");
-
-        //Setting axes titles
-        rpyDataGraph.getGridLabelRenderer().setVerticalAxisTitle("RPY[rad]");
-        rpyDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("t[s]");
 
         //Setting legend
         rollDataSeries.setTitle("Roll");
@@ -127,6 +122,34 @@ public class RpyActivity extends AppCompatActivity {
         /* END initialize GraphView */
         queue = Volley.newRequestQueue(RpyActivity.this);
 
+    }
+
+    @Override
+    protected void onResume() {
+        setRangesAndTitles();
+        super.onResume();
+    }
+
+    private void setRangesAndTitles()
+    {
+        if (unit.equals("rad"))
+        {
+            rpyDataGraph.getViewport().setYAxisBoundsManual(true);
+            rpyDataGraph.getViewport().setMinY(rpyDataGraphMinYRad);
+            rpyDataGraph.getViewport().setMaxY(rpyDataGraphMaxYRad);
+            rpyDataGraph.getGridLabelRenderer().setVerticalAxisTitle("RPY[rad]");
+            rpyDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("t[s]");
+            rpyDataGraph.getGridLabelRenderer().setNumVerticalLabels(16);
+        }
+        else if (unit.equals("deg"))
+        {
+            rpyDataGraph.getViewport().setYAxisBoundsManual(true);
+            rpyDataGraph.getViewport().setMinY(rpyDataGraphMinYDeg);
+            rpyDataGraph.getViewport().setMaxY(rpyDataGraphMaxYDeg);
+            rpyDataGraph.getGridLabelRenderer().setVerticalAxisTitle("RPY[deg]");
+            rpyDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("t[s]");
+            rpyDataGraph.getGridLabelRenderer().setNumVerticalLabels(10);
+        }
     }
 
     /* BEGIN config alert dialog */
@@ -157,7 +180,7 @@ public class RpyActivity extends AppCompatActivity {
 
             // IoT server IP address
             ipAddress = dataIntent.getStringExtra(CommonData.CONFIG_IP_ADDRESS);
-
+            unit = dataIntent.getStringExtra("unit");
             // Sample time (ms)
             String sampleTimeText = dataIntent.getStringExtra(CommonData.CONFIG_SAMPLE_TIME);
             assert sampleTimeText != null;
@@ -188,8 +211,16 @@ public class RpyActivity extends AppCompatActivity {
         }
     }
 
-    private String getURL(String ip) {
-        return ("http://" + ip + "/" + CommonData.FILE_NAME2);
+    private String getURL(String ip, String unitX) {
+        if (unitX.equals("rad"))
+        {
+            return ("http://" + ip + "/" + CommonData.FILE_NAME2);
+        }
+        else
+        {
+            return ("http://" + ip + "/" + CommonData.FILE_NAME5);
+        }
+
     }
 
     private void openRpyOptions() {
@@ -197,6 +228,7 @@ public class RpyActivity extends AppCompatActivity {
         Bundle configBundle = new Bundle();
         configBundle.putString(CommonData.CONFIG_IP_ADDRESS, ipAddress);
         configBundle.putInt(CommonData.CONFIG_SAMPLE_TIME, sampleTime);
+        configBundle.putString("unit", unit);
         openConfigIntent.putExtras(configBundle);
         startActivityForResult(openConfigIntent, CommonData.REQUEST_CODE_CONFIG);
     }
@@ -342,7 +374,7 @@ public class RpyActivity extends AppCompatActivity {
     {
         // Instantiate the RequestQueue with Volley
         // https://javadoc.io/doc/com.android.volley/volley/1.1.0-rc2/index.html
-        String url = getURL(ipAddress);
+        String url = getURL(ipAddress, unit);
 
         // Request a string response from the provided URL
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -390,7 +422,6 @@ public class RpyActivity extends AppCompatActivity {
                 rollDataSeries.appendData(new DataPoint(timeStamp, rollRawData), scrollGraph, dataGraphMaxDataPointsNumber);
                 pitchDataSeries.appendData(new DataPoint(timeStamp, pitchRawData), scrollGraph, dataGraphMaxDataPointsNumber);
                 yawDataSeries.appendData(new DataPoint(timeStamp, yawRawData), scrollGraph, dataGraphMaxDataPointsNumber);
-
                 // refresh chart
                 rpyDataGraph.onDataChanged(true, true);
             }

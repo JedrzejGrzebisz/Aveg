@@ -6,7 +6,7 @@
     <string name="optionsBtn">OPCJE</string>
 
     <string-array name="rpyUnit">
-        <item>rad</item>
         <item>deg</item>
+        <item>rad</item>
     </string-array>
 </resources>

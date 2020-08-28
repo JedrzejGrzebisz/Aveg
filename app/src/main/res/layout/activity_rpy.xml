@@ -78,7 +78,7 @@
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/rpyDataGraph"
                 android:layout_width="match_parent"
-                android:layout_height="300dp" />
+                android:layout_height="500dp" />
 
         </LinearLayout>
 

@@ -2,29 +2,27 @@ package com.example.aveg;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class RpyOptionsActivity extends AppCompatActivity {
+public class RpyOptionsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     /* BEGIN config widgets */
-    EditText ipEditText;
-    EditText sampleTimeEditText;
-    Spinner rpyUnitPicked;
+    private EditText ipEditText;
+    private EditText sampleTimeEditText;
+    private String unit;
     /* END config widgets */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rpy_options);
-
-        rpyUnitPicked = findViewById(R.id.rpyUnitPicked);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.rpyUnit, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        rpyUnitPicked.setAdapter(adapter);
 
         // get the Intent that started this Activity
         Intent intent = getIntent();
@@ -39,6 +37,13 @@ public class RpyOptionsActivity extends AppCompatActivity {
         sampleTimeEditText = findViewById(R.id.userInputRpyTp);
         int tp = configBundle.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
         sampleTimeEditText.setText(Integer.toString(tp));
+
+        //Initialize spinner
+        Spinner rpyUnitPicked = findViewById(R.id.rpyUnitPicked);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.rpyUnit, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        rpyUnitPicked.setAdapter(adapter);
+        rpyUnitPicked.setOnItemSelectedListener(this);
     }
 
     @Override
@@ -46,8 +51,19 @@ public class RpyOptionsActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra(CommonData.CONFIG_IP_ADDRESS, ipEditText.getText().toString());
         intent.putExtra(CommonData.CONFIG_SAMPLE_TIME, sampleTimeEditText.getText().toString());
+        intent.putExtra("unit", unit);
         setResult(RESULT_OK, intent);
         finish();
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        unit = parent.getItemAtPosition(position).toString();
+        //Toast.makeText(parent.getContext(), unit, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 }
