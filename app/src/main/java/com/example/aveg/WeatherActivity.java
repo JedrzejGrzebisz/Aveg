@@ -36,6 +36,9 @@ public class WeatherActivity extends AppCompatActivity {
     /* BEGIN config data */
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
     private int sampleTime = CommonData.DEFAULT_SAMPLE_TIME;
+    private String temperatureUnit = "C";
+    private String pressureUnit = "hPa";
+    private String humidityUnit = "%";
     /* END config data */
 
     /* BEGIN widgets */
@@ -50,17 +53,23 @@ public class WeatherActivity extends AppCompatActivity {
     //max and min ranges for x and y axes
     private final int dataGraphMaxDataPointsNumber = 1000;
 
-    private final double dataGraphMaxX = 35.0d;
+    private final double dataGraphMaxX = 25.0d;
     private final double dataGraphMinX = 0.0d;
 
-    private final double temperatureDataGraphMaxY = 110.0d;
-    private final double temperatureDataGraphMinY = -40.0d;
+    private final double temperatureDataGraphMaxYCelsius = 110.0d;
+    private final double temperatureDataGraphMinYCelsius = -40.0d;
+    private final double temperatureDataGraphMaxYFahrenheit = 225.0d;
+    private final double temperatureDataGraphMinYFahrenheit = -25.0d;
 
-    private final double pressureDataGraphMaxY = 1300.0d;
-    private final double pressureDataGraphMinY = 200.0d;
+    private final double pressureDataGraphMaxYhPa = 1300.0d;
+    private final double pressureDataGraphMinYhPa = 200.0d;
+    private final double pressureDataGraphMaxYmmHg = 950.0d;
+    private final double pressureDataGraphMinYmmHg = 190.0d;
 
-    private final double humidityDataGraphMaxY = 100.0d;
-    private final double humidityDataGraphMinY = 0.0d;
+    private final double humidityDataGraphMaxYPercentage = 100.0d;
+    private final double humidityDataGraphMinYPercentage = 0.0d;
+    private final double humidityDataGraphMaxY_01 = 1.0d;
+    private final double humidityDataGraphMinY_01 = 0.0d;
 
     private AlertDialog.Builder configAlertDialog;
 
@@ -86,55 +95,95 @@ public class WeatherActivity extends AppCompatActivity {
         /* BEGIN initialize GraphView */
         // https://github.com/jjoe64/GraphView/wiki
 
-        //Initializing temperature graph and setting ranges
+        //Initializing temperature graph and setting ranges X axis
         temperatureDataGraph = findViewById(R.id.temperatureDataGraph);
         temperatureDataSeries = new LineGraphSeries<>(new DataPoint[]{});
         temperatureDataGraph.addSeries(temperatureDataSeries);
         temperatureDataGraph.getViewport().setXAxisBoundsManual(true);
         temperatureDataGraph.getViewport().setMinX(dataGraphMinX);
         temperatureDataGraph.getViewport().setMaxX(dataGraphMaxX);
-        temperatureDataGraph.getViewport().setYAxisBoundsManual(true);
-        temperatureDataGraph.getViewport().setMinY(temperatureDataGraphMinY);
-        temperatureDataGraph.getViewport().setMaxY(temperatureDataGraphMaxY);
 
-        //Initializing pressure graph and setting ranges
+        //Initializing pressure graph and setting ranges X axis
         pressureDataGraph = findViewById(R.id.pressureDataGraph);
         pressureDataSeries = new LineGraphSeries<>(new DataPoint[]{});
         pressureDataGraph.addSeries(pressureDataSeries);
         pressureDataGraph.getViewport().setXAxisBoundsManual(true);
         pressureDataGraph.getViewport().setMinX(dataGraphMinX);
         pressureDataGraph.getViewport().setMaxX(dataGraphMaxX);
-        pressureDataGraph.getViewport().setYAxisBoundsManual(true);
-        pressureDataGraph.getViewport().setMinY(pressureDataGraphMinY);
-        pressureDataGraph.getViewport().setMaxY(pressureDataGraphMaxY);
 
-        //Initializing humidity graph and setting ranges
+        //Initializing humidity graph and setting ranges X axis
         humidityDataGraph = findViewById(R.id.humidityDataGraph);
         humidityDataSeries = new LineGraphSeries<>(new DataPoint[]{});
         humidityDataGraph.addSeries(humidityDataSeries);
         humidityDataGraph.getViewport().setXAxisBoundsManual(true);
         humidityDataGraph.getViewport().setMinX(dataGraphMinX);
         humidityDataGraph.getViewport().setMaxX(dataGraphMaxX);
-        humidityDataGraph.getViewport().setYAxisBoundsManual(true);
-        humidityDataGraph.getViewport().setMinY(humidityDataGraphMinY);
-        humidityDataGraph.getViewport().setMaxY(humidityDataGraphMaxY);
 
         //Initializing chart titles
         temperatureDataGraph.setTitle("Temperatura");
         pressureDataGraph.setTitle("Ciśnienie");
         humidityDataGraph.setTitle("Wilgotność");
 
-        //Initializing axes titles
-        temperatureDataGraph.getGridLabelRenderer().setVerticalAxisTitle("T[°C]");
-        pressureDataGraph.getGridLabelRenderer().setVerticalAxisTitle("p[hPa]");
-        humidityDataGraph.getGridLabelRenderer().setVerticalAxisTitle("H[%]");
+        //Setting ranges, axis titles and grid for GraphView(depends on unit)
+        setRangesAndTitles();
+
+        /* END initialize GraphView */
+        queue = Volley.newRequestQueue(WeatherActivity.this);
+    }
+
+    @Override
+    protected void onResume() {
+        setRangesAndTitles();
+        super.onResume();
+    }
+
+    private void setRangesAndTitles() {
+
+        //Common for any unit
+        temperatureDataGraph.getViewport().setYAxisBoundsManual(true);
+        pressureDataGraph.getViewport().setYAxisBoundsManual(true);
+        humidityDataGraph.getViewport().setYAxisBoundsManual(true);
 
         temperatureDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("t[s]");
         pressureDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("t[s]");
         humidityDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("t[s]");
 
-        /* END initialize GraphView */
-        queue = Volley.newRequestQueue(WeatherActivity.this);
+        if (temperatureUnit.equals("C"))
+        {
+            temperatureDataGraph.getGridLabelRenderer().setVerticalAxisTitle("T[°C]");
+            temperatureDataGraph.getViewport().setMinY(temperatureDataGraphMinYCelsius);
+            temperatureDataGraph.getViewport().setMaxY(temperatureDataGraphMaxYCelsius);
+        }
+        else
+        {
+            temperatureDataGraph.getGridLabelRenderer().setVerticalAxisTitle("T[°F]");
+            temperatureDataGraph.getViewport().setMinY(temperatureDataGraphMinYFahrenheit);
+            temperatureDataGraph.getViewport().setMaxY(temperatureDataGraphMaxYFahrenheit);
+        }
+        if (pressureUnit.equals("hPa"))
+        {
+            pressureDataGraph.getGridLabelRenderer().setVerticalAxisTitle("p[hPa]");
+            pressureDataGraph.getViewport().setMinY(pressureDataGraphMinYhPa);
+            pressureDataGraph.getViewport().setMaxY(pressureDataGraphMaxYhPa);
+        }
+        else
+        {
+            pressureDataGraph.getGridLabelRenderer().setVerticalAxisTitle("p[mmHg]");
+            pressureDataGraph.getViewport().setMinY(pressureDataGraphMinYmmHg);
+            pressureDataGraph.getViewport().setMaxY(pressureDataGraphMaxYmmHg);
+        }
+        if (humidityUnit.equals("%"))
+        {
+            humidityDataGraph.getGridLabelRenderer().setVerticalAxisTitle("H[%]");
+            humidityDataGraph.getViewport().setMinY(humidityDataGraphMinYPercentage);
+            humidityDataGraph.getViewport().setMaxY(humidityDataGraphMaxYPercentage);
+        }
+        else
+        {
+            humidityDataGraph.getGridLabelRenderer().setVerticalAxisTitle("H[0-1]");
+            humidityDataGraph.getViewport().setMinY(humidityDataGraphMinY_01);
+            humidityDataGraph.getViewport().setMaxY(humidityDataGraphMaxY_01);
+        }
     }
 
     /* BEGIN config alert dialog */
@@ -165,7 +214,9 @@ public class WeatherActivity extends AppCompatActivity {
 
             // IoT server IP address
             ipAddress = dataIntent.getStringExtra(CommonData.CONFIG_IP_ADDRESS);
-
+            temperatureUnit = dataIntent.getStringExtra("temperatureUnit");
+            pressureUnit = dataIntent.getStringExtra("pressureUnit");
+            humidityUnit = dataIntent.getStringExtra("humidityUnit");
             // Sample time (ms)
             String sampleTimeText = dataIntent.getStringExtra(CommonData.CONFIG_SAMPLE_TIME);
             sampleTime = Integer.parseInt(sampleTimeText);
@@ -206,6 +257,9 @@ public class WeatherActivity extends AppCompatActivity {
         Bundle configBundle = new Bundle();
         configBundle.putString(CommonData.CONFIG_IP_ADDRESS, ipAddress);
         configBundle.putInt(CommonData.CONFIG_SAMPLE_TIME, sampleTime);
+        configBundle.putString("temperatureUnit", temperatureUnit);
+        configBundle.putString("pressureUnit", pressureUnit);
+        configBundle.putString("humidityUnit", humidityUnit);
         openConfigIntent.putExtras(configBundle);
         startActivityForResult(openConfigIntent, CommonData.REQUEST_CODE_CONFIG);
     }
@@ -229,7 +283,10 @@ public class WeatherActivity extends AppCompatActivity {
         }
         // Read chart data form JSON object
         try {
-            x = (double)jObject.get("TemperatureC");
+            if (temperatureUnit.equals("C"))
+                x = (double)jObject.get("TemperatureC");
+            else
+                x = (double)jObject.get("TemperatureF");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -250,7 +307,10 @@ public class WeatherActivity extends AppCompatActivity {
 
         // Read chart data form JSON object
         try {
-            x = (double) jObject.get("PressureHPa");
+            if (pressureUnit.equals("hPa"))
+                x = (double) jObject.get("PressureHPa");
+            else
+                x = (double) jObject.get("PressureMmHg");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -271,7 +331,10 @@ public class WeatherActivity extends AppCompatActivity {
 
         // Read chart data form JSON object
         try {
-            x = (double) jObject.get("HumidityPercentage");
+            if (humidityUnit.equals("%"))
+                x = (double) jObject.get("HumidityPercentage");
+            else
+                x = (double) jObject.get("Humidity01");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -344,7 +407,8 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void errorHandling(int errorCode) {
-
+        Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
+        errorToast.show();
     }
 
     private void sendPostRequest()

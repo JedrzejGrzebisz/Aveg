@@ -58,8 +58,8 @@
                     android:id="@+id/textViewRpyUnit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Położenie kątowe:"
+                    android:layout_weight="2"
+                    android:text="Położenie kątowe(stopnie/radiany):"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 
@@ -67,6 +67,7 @@
                     android:id="@+id/rpyUnitPicked"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:layout_weight="1" />
             </LinearLayout>
 

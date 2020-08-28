@@ -9,4 +9,16 @@
         <item>deg</item>
         <item>rad</item>
     </string-array>
+    <string-array name="temperatureUnit">
+        <item>C</item>
+        <item>F</item>
+    </string-array>
+    <string-array name="pressureUnit">
+        <item>hPa</item>
+        <item>mmHg</item>
+    </string-array>
+    <string-array name="humidityUnit">
+        <item>%</item>
+        <item>0_1</item>
+    </string-array>
 </resources>
