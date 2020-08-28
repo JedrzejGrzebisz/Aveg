@@ -4,4 +4,9 @@
     <string name="startBtn">START</string>
     <string name="stopBtn">STOP</string>
     <string name="optionsBtn">OPCJE</string>
+
+    <string-array name="rpyUnit">
+        <item>rad</item>
+        <item>deg</item>
+    </string-array>
 </resources>

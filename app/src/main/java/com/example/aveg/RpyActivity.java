@@ -52,11 +52,15 @@ public class RpyActivity extends AppCompatActivity {
     //max and min ranges for x and y axes
     private final int dataGraphMaxDataPointsNumber = 1000;
 
+
     private final double dataGraphMaxX = 25.0d;
     private final double dataGraphMinX = 0.0d;
 
     private final double rpyDataGraphMaxY = 3.15d;
     private final double rpyDataGraphMinY = -3.15d;
+
+    private final double rpyDataGraphMaxYDeg = 360.0d;
+    private final double rpyDataGraphMinYDeg = 0.0d;
 
     private AlertDialog.Builder configAlertDialog;
 
@@ -133,7 +137,7 @@ public class RpyActivity extends AppCompatActivity {
         configAlertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 stopRequestTimerTask();
-                openWeatherOptions();
+                openRpyOptions();
             }
         });
         configAlertDialog.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
@@ -167,7 +171,7 @@ public class RpyActivity extends AppCompatActivity {
                 if (requestTimer != null)
                     dialogAlertShow();
                 else
-                    openWeatherOptions();
+                    openRpyOptions();
                 break;
             }
             case R.id.startRpyChartsBtn: {
@@ -188,8 +192,8 @@ public class RpyActivity extends AppCompatActivity {
         return ("http://" + ip + "/" + CommonData.FILE_NAME2);
     }
 
-    private void openWeatherOptions() {
-        Intent openConfigIntent = new Intent(RpyActivity.this, WeatherOptionsActivity.class);
+    private void openRpyOptions() {
+        Intent openConfigIntent = new Intent(RpyActivity.this, RpyOptionsActivity.class);
         Bundle configBundle = new Bundle();
         configBundle.putString(CommonData.CONFIG_IP_ADDRESS, ipAddress);
         configBundle.putInt(CommonData.CONFIG_SAMPLE_TIME, sampleTime);

@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -180,7 +182,9 @@ public class WeatherActivity extends AppCompatActivity {
                 break;
             }
             case R.id.startWChartsBtn: {
+
                 startRequestTimer();
+                //sendPostRequest();
                 break;
             }
             case R.id.stopWChartsBtn: {
@@ -341,6 +345,26 @@ public class WeatherActivity extends AppCompatActivity {
 
     private void errorHandling(int errorCode) {
 
+    }
+
+    private void sendPostRequest()
+    {
+        String url = "http://" + ipAddress + "/" + CommonData.FILE_NAME4;
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //PHP run python
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error response", "Error");
+                    }
+                }
+        );
+        queue.add(postRequest);
     }
 
     /**
