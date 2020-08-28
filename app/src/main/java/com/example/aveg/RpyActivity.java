@@ -26,6 +26,8 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,6 +46,8 @@ public class RpyActivity extends AppCompatActivity {
     private LineGraphSeries<DataPoint> rollDataSeries;
     private LineGraphSeries<DataPoint> pitchDataSeries;
     private LineGraphSeries<DataPoint> yawDataSeries;
+
+    private List<Double> rpyValuesList;
 
     //max and min ranges for x and y axes
     private final int dataGraphMaxDataPointsNumber = 1000;
@@ -199,6 +203,31 @@ public class RpyActivity extends AppCompatActivity {
      * @retval new chart data
      */
 
+    private List<Double> getRawDataFromResponse(String response) {
+        JSONObject jObject;
+        rpyValuesList = new ArrayList<>();
+
+        // Create generic JSON object form string
+        try {
+            jObject = new JSONObject(response);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+        // Read chart data form JSON object
+        try {
+            double roll = (double)jObject.get("Roll");
+            double pitch = (double)jObject.get("Pitch");
+            double yaw = (double)jObject.get("Yaw");
+            rpyValuesList.add(roll);
+            rpyValuesList.add(pitch);
+            rpyValuesList.add(yaw);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return rpyValuesList;
+    }
+/*
     private double getRawDataFromResponse_roll(String response) {
         JSONObject jObject;
         double x = Double.NaN;
@@ -217,8 +246,8 @@ public class RpyActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return x;
-    }
-
+    }*/
+/*
     private double getRawDataFromResponse_pitch(String response) {
         JSONObject jObject;
         double x = Double.NaN;
@@ -238,8 +267,8 @@ public class RpyActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return x;
-    }
-
+    }*/
+    /*
     private double getRawDataFromResponse_yaw(String response) {
         JSONObject jObject;
         double x = Double.NaN;
@@ -259,7 +288,7 @@ public class RpyActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return x;
-    }
+    }*/
 
     /**
      * @brief Starts new 'Timer' (if currently not exist) and schedules periodic task.
@@ -327,7 +356,7 @@ public class RpyActivity extends AppCompatActivity {
     }
 
     private void errorHandling(int errorCode) {
-        Toast errorToast = Toast.makeText(this, "ERROR", Toast.LENGTH_SHORT);
+        Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
         errorToast.show();
     }
 
@@ -341,9 +370,9 @@ public class RpyActivity extends AppCompatActivity {
             requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
 
             // get raw data from JSON response
-            double rollRawData = getRawDataFromResponse_roll(response);
-            double pitchRawData = getRawDataFromResponse_pitch(response);
-            double yawRawData = getRawDataFromResponse_yaw(response);
+            double rollRawData = getRawDataFromResponse(response).get(0);
+            double pitchRawData = getRawDataFromResponse(response).get(1);
+            double yawRawData = getRawDataFromResponse(response).get(2);
 
             // update chart
             if (isNaN(rollRawData) || isNaN(pitchRawData) || isNaN(yawRawData)) {

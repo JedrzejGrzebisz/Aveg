@@ -225,7 +225,7 @@ public class WeatherActivity extends AppCompatActivity {
         }
         // Read chart data form JSON object
         try {
-            x = (double)jObject.get("Temperature");
+            x = (double)jObject.get("TemperatureC");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -246,7 +246,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         // Read chart data form JSON object
         try {
-            x = (double) jObject.get("Pressure");
+            x = (double) jObject.get("PressureHPa");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -267,7 +267,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         // Read chart data form JSON object
         try {
-            x = (double) jObject.get("Humidity");
+            x = (double) jObject.get("HumidityPercentage");
         } catch (JSONException e) {
             e.printStackTrace();
         }

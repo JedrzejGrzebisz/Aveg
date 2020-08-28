@@ -18,7 +18,7 @@ public final class CommonData {
 
     // IoT server data
     public final static String FILE_NAME = "AndroidTasks/weatherCondition.json";
-    public final static String FILE_NAME2 = "jQuery/webApp/rpyValue.json";
+    public final static String FILE_NAME2 = "jQuery/webApp/rpyValueRad.json";
     public final static String FILE_NAME3 = "SH_5/joystick.json";
 
 }

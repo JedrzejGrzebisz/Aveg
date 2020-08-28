@@ -60,7 +60,7 @@ public class JoystickActivity extends AppCompatActivity {
 
     Handler handler = new Handler();
     Runnable runnable;
-    int delay = 1000;
+    int delay = 300;
     double xAxisRawDataOld;
     double yAxisRawDataOld;
 
@@ -377,10 +377,11 @@ public class JoystickActivity extends AppCompatActivity {
         double yAxisRawData = getRawDataFromResponse_yAxis(response);
         double centerRawData = getRawDataFromResponse_center(response);
 
-       // if (isNaN(xAxisRawData) || isNaN(yAxisRawData) || isNaN(centerRawData)) {
-        //    errorHandling(CommonData.ERROR_NAN_DATA);
-        //}
-       // else {
+        if (isNaN(xAxisRawData) || isNaN(yAxisRawData) || isNaN(centerRawData)) {
+            errorHandling(CommonData.ERROR_NAN_DATA);
+        }
+
+        else {
 
             joystickDataSeries.appendData(new DataPoint(xAxisRawData, yAxisRawData), false, dataGraphMaxDataPointsNumber);
             // refresh chart
@@ -389,7 +390,7 @@ public class JoystickActivity extends AppCompatActivity {
             //refresh number of center button clicks
             final String centerRawDataString = Double.toString(centerRawData);
             centerClickNb.setText(centerRawDataString);
-        //}
+        }
     }
 
     /*
