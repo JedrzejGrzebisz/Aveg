@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,7 +39,7 @@ public class RpyActivity extends AppCompatActivity {
     /* BEGIN config data */
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
     private int sampleTime = CommonData.DEFAULT_SAMPLE_TIME;
-    private String unit = "deg";
+    private String rpyUnit = CommonData.DEFAULT_RPY_UNIT;
     /* END config data */
 
     /* BEGIN widgets */
@@ -132,7 +133,7 @@ public class RpyActivity extends AppCompatActivity {
 
     private void setRangesAndTitles()
     {
-        if (unit.equals("rad"))
+        if (rpyUnit.equals("rad"))
         {
             rpyDataGraph.getViewport().setYAxisBoundsManual(true);
             rpyDataGraph.getViewport().setMinY(rpyDataGraphMinYRad);
@@ -141,7 +142,7 @@ public class RpyActivity extends AppCompatActivity {
             rpyDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("t[s]");
             rpyDataGraph.getGridLabelRenderer().setNumVerticalLabels(16);
         }
-        else if (unit.equals("deg"))
+        else if (rpyUnit.equals("deg"))
         {
             rpyDataGraph.getViewport().setYAxisBoundsManual(true);
             rpyDataGraph.getViewport().setMinY(rpyDataGraphMinYDeg);
@@ -180,7 +181,7 @@ public class RpyActivity extends AppCompatActivity {
 
             // IoT server IP address
             ipAddress = dataIntent.getStringExtra(CommonData.CONFIG_IP_ADDRESS);
-            unit = dataIntent.getStringExtra("unit");
+            rpyUnit = dataIntent.getStringExtra(CommonData.CONFIG_RPY_UNIT);
             // Sample time (ms)
             String sampleTimeText = dataIntent.getStringExtra(CommonData.CONFIG_SAMPLE_TIME);
             assert sampleTimeText != null;
@@ -211,14 +212,14 @@ public class RpyActivity extends AppCompatActivity {
         }
     }
 
-    private String getURL(String ip, String unitX) {
-        if (unitX.equals("rad"))
+    private String getURL(String ip) {
+        if (rpyUnit.equals("rad"))
         {
-            return ("http://" + ip + "/" + CommonData.FILE_NAME2);
+            return ("http://" + ip + "/" + CommonData.RPY_RAD_FILE_NAME);
         }
         else
         {
-            return ("http://" + ip + "/" + CommonData.FILE_NAME5);
+            return ("http://" + ip + "/" + CommonData.RPY_DEG_FILE_NAME);
         }
 
     }
@@ -228,7 +229,7 @@ public class RpyActivity extends AppCompatActivity {
         Bundle configBundle = new Bundle();
         configBundle.putString(CommonData.CONFIG_IP_ADDRESS, ipAddress);
         configBundle.putInt(CommonData.CONFIG_SAMPLE_TIME, sampleTime);
-        configBundle.putString("unit", unit);
+        configBundle.putString(CommonData.CONFIG_RPY_UNIT, rpyUnit);
         openConfigIntent.putExtras(configBundle);
         startActivityForResult(openConfigIntent, CommonData.REQUEST_CODE_CONFIG);
     }
@@ -374,7 +375,7 @@ public class RpyActivity extends AppCompatActivity {
     {
         // Instantiate the RequestQueue with Volley
         // https://javadoc.io/doc/com.android.volley/volley/1.1.0-rc2/index.html
-        String url = getURL(ipAddress, unit);
+        String url = getURL(ipAddress);
 
         // Request a string response from the provided URL
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -406,9 +407,9 @@ public class RpyActivity extends AppCompatActivity {
             requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
 
             // get raw data from JSON response
-            double rollRawData = getRawDataFromResponse(response).get(0);
-            double pitchRawData = getRawDataFromResponse(response).get(1);
-            double yawRawData = getRawDataFromResponse(response).get(2);
+            double rollRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(0);
+            double pitchRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(1);
+            double yawRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(2);
 
             // update chart
             if (isNaN(rollRawData) || isNaN(pitchRawData) || isNaN(yawRawData)) {

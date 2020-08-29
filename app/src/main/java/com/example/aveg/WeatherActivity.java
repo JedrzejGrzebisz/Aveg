@@ -26,8 +26,13 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.sql.CommonDataSource;
 
 import static java.lang.Double.isNaN;
 
@@ -36,9 +41,9 @@ public class WeatherActivity extends AppCompatActivity {
     /* BEGIN config data */
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
     private int sampleTime = CommonData.DEFAULT_SAMPLE_TIME;
-    private String temperatureUnit = "C";
-    private String pressureUnit = "hPa";
-    private String humidityUnit = "%";
+    private String temperatureUnit = CommonData.DEFAULT_TEMPERATURE_UNIT;
+    private String pressureUnit = CommonData.DEFAULT_PRESSURE_UNIT;
+    private String humidityUnit = CommonData.DEFAULT_HUMIDITY_UNIT;
     /* END config data */
 
     /* BEGIN widgets */
@@ -50,21 +55,23 @@ public class WeatherActivity extends AppCompatActivity {
     private LineGraphSeries<DataPoint> pressureDataSeries;
     private LineGraphSeries<DataPoint> humidityDataSeries;
 
+    private List<Double> weatherValuesList;
+
     //max and min ranges for x and y axes
     private final int dataGraphMaxDataPointsNumber = 1000;
 
     private final double dataGraphMaxX = 25.0d;
     private final double dataGraphMinX = 0.0d;
 
-    private final double temperatureDataGraphMaxYCelsius = 110.0d;
+    private final double temperatureDataGraphMaxYCelsius = 120.0d;
     private final double temperatureDataGraphMinYCelsius = -40.0d;
-    private final double temperatureDataGraphMaxYFahrenheit = 225.0d;
-    private final double temperatureDataGraphMinYFahrenheit = -25.0d;
+    private final double temperatureDataGraphMaxYFahrenheit = 250.0d;
+    private final double temperatureDataGraphMinYFahrenheit = -50.0d;
 
-    private final double pressureDataGraphMaxYhPa = 1300.0d;
+    private final double pressureDataGraphMaxYhPa = 1400.0d;
     private final double pressureDataGraphMinYhPa = 200.0d;
-    private final double pressureDataGraphMaxYmmHg = 950.0d;
-    private final double pressureDataGraphMinYmmHg = 190.0d;
+    private final double pressureDataGraphMaxYmmHg = 1000.0d;
+    private final double pressureDataGraphMinYmmHg = 0.0d;
 
     private final double humidityDataGraphMaxYPercentage = 100.0d;
     private final double humidityDataGraphMinYPercentage = 0.0d;
@@ -214,11 +221,12 @@ public class WeatherActivity extends AppCompatActivity {
 
             // IoT server IP address
             ipAddress = dataIntent.getStringExtra(CommonData.CONFIG_IP_ADDRESS);
-            temperatureUnit = dataIntent.getStringExtra("temperatureUnit");
-            pressureUnit = dataIntent.getStringExtra("pressureUnit");
-            humidityUnit = dataIntent.getStringExtra("humidityUnit");
+            temperatureUnit = dataIntent.getStringExtra(CommonData.CONFIG_TEMPERATURE_UNIT);
+            pressureUnit = dataIntent.getStringExtra(CommonData.CONFIG_PRESSURE_UNIT);
+            humidityUnit = dataIntent.getStringExtra(CommonData.CONFIG_HUMIDITY_UNIT);
             // Sample time (ms)
             String sampleTimeText = dataIntent.getStringExtra(CommonData.CONFIG_SAMPLE_TIME);
+            assert sampleTimeText != null;
             sampleTime = Integer.parseInt(sampleTimeText);
         }
     }
@@ -249,7 +257,7 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private String getURL(String ip) {
-        return ("http://" + ip + "/" + CommonData.FILE_NAME);
+        return ("http://" + ip + "/" + CommonData.WEATHER_FILE_NAME);
     }
 
     private void openWeatherOptions() {
@@ -257,9 +265,9 @@ public class WeatherActivity extends AppCompatActivity {
         Bundle configBundle = new Bundle();
         configBundle.putString(CommonData.CONFIG_IP_ADDRESS, ipAddress);
         configBundle.putInt(CommonData.CONFIG_SAMPLE_TIME, sampleTime);
-        configBundle.putString("temperatureUnit", temperatureUnit);
-        configBundle.putString("pressureUnit", pressureUnit);
-        configBundle.putString("humidityUnit", humidityUnit);
+        configBundle.putString(CommonData.CONFIG_TEMPERATURE_UNIT, temperatureUnit);
+        configBundle.putString(CommonData.CONFIG_PRESSURE_UNIT, pressureUnit);
+        configBundle.putString(CommonData.CONFIG_HUMIDITY_UNIT, humidityUnit);
         openConfigIntent.putExtras(configBundle);
         startActivityForResult(openConfigIntent, CommonData.REQUEST_CODE_CONFIG);
     }
@@ -270,75 +278,44 @@ public class WeatherActivity extends AppCompatActivity {
      * @retval new chart data
      */
 
-    private double getRawDataFromResponse_temperature(String response) {
+    private List<Double> getRawDataFromResponse(String response) {
         JSONObject jObject;
-        double x = Double.NaN;
+        weatherValuesList = new ArrayList<>();
+        double temperature;
+        double pressure;
+        double humidity;
 
         // Create generic JSON object form string
         try {
             jObject = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
-            return x;
+            return null;
         }
         // Read chart data form JSON object
         try {
             if (temperatureUnit.equals("C"))
-                x = (double)jObject.get("TemperatureC");
+                temperature = (double) jObject.get("TemperatureC");
             else
-                x = (double)jObject.get("TemperatureF");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return x;
-    }
+                temperature = (double) jObject.get("TemperatureF");
 
-    private double getRawDataFromResponse_pressure(String response) {
-        JSONObject jObject;
-        double x = Double.NaN;
-
-        // Create generic JSON object form string
-        try {
-            jObject = new JSONObject(response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return x;
-        }
-
-        // Read chart data form JSON object
-        try {
             if (pressureUnit.equals("hPa"))
-                x = (double) jObject.get("PressureHPa");
+                pressure = (double) jObject.get("PressureHPa");
             else
-                x = (double) jObject.get("PressureMmHg");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return x;
-    }
+                pressure = (double) jObject.get("PressureMmHg");
 
-    private double getRawDataFromResponse_humidity(String response) {
-        JSONObject jObject;
-        double x = Double.NaN;
-
-        // Create generic JSON object form string
-        try {
-            jObject = new JSONObject(response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return x;
-        }
-
-        // Read chart data form JSON object
-        try {
             if (humidityUnit.equals("%"))
-                x = (double) jObject.get("HumidityPercentage");
+                humidity = (double) jObject.get("HumidityPercentage");
             else
-                x = (double) jObject.get("Humidity01");
+                humidity = (double) jObject.get("Humidity01");
+
+            weatherValuesList.add(temperature);
+            weatherValuesList.add(pressure);
+            weatherValuesList.add(humidity);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return x;
+        return weatherValuesList;
     }
 
     /**
@@ -411,6 +388,7 @@ public class WeatherActivity extends AppCompatActivity {
         errorToast.show();
     }
 
+    /*
     private void sendPostRequest()
     {
         String url = "http://" + ipAddress + "/" + CommonData.FILE_NAME4;
@@ -429,7 +407,7 @@ public class WeatherActivity extends AppCompatActivity {
                 }
         );
         queue.add(postRequest);
-    }
+    }*/
 
     /**
      * @brief GET response handling - chart data series updated with IoT server data.
@@ -441,9 +419,9 @@ public class WeatherActivity extends AppCompatActivity {
             requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
 
             // get raw data from JSON response
-            double temperatureRawData = getRawDataFromResponse_temperature(response);
-            double pressureRawData = getRawDataFromResponse_pressure(response);
-            double humidityRawData = getRawDataFromResponse_humidity(response);
+            double temperatureRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(0);
+            double pressureRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(1);
+            double humidityRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(2);
 
             // update chart
             if (isNaN(temperatureRawData)) {

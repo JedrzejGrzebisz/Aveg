@@ -210,7 +210,7 @@ public class JoystickActivity extends AppCompatActivity {
     }*/
 
     private String getURL(String ip) {
-        return ("http://" + ip + "/" + CommonData.FILE_NAME3);
+        return ("http://" + ip + "/" + CommonData.JOYSTICK_FILE_NAME);
     }
 
     /*
@@ -292,50 +292,6 @@ public class JoystickActivity extends AppCompatActivity {
     }
 
     /**
-     * @brief Starts new 'Timer' (if currently not exist) and schedules periodic task.
-     */
-    /*
-    private void startRequestTimer() {
-        if (requestTimer == null) {
-            // set a new Timer
-            requestTimer = new Timer();
-            // initialize the TimerTask's job
-            initializeRequestTimerTask();
-            requestTimer.schedule(requestTimerTask, 0, sampleTime);
-        }
-    }*/
-
-    /**
-     * @brief Stops request timer (if currently exist)
-     * and sets 'requestTimerFirstRequestAfterStop' flag.
-     */
-    /*
-    private void stopRequestTimerTask() {
-        // stop the timer, if it's not already null
-        if (requestTimer != null) {
-            requestTimer.cancel();
-            requestTimer = null;
-            requestTimerFirstRequestAfterStop = true;
-        }
-    }*/
-
-    /**
-     * @brief Initialize request timer period task with 'Handler' post method as 'sendGetRequest'.
-     */
-    /*
-    private void initializeRequestTimerTask() {
-        requestTimerTask = new TimerTask() {
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        sendGetRequest();
-                    }
-                });
-            }
-        };
-    }*/
-
-    /**
      * @brief Sending GET request to IoT server using 'Volley'.
      */
     private void sendGetRequest()
@@ -392,77 +348,4 @@ public class JoystickActivity extends AppCompatActivity {
             centerClickNb.setText(centerRawDataString);
         }
     }
-
-    /*
-    private void responseHandling(String response) {
-        if (requestTimer != null) {
-            // get time stamp with SystemClock
-            long requestTimerCurrentTime = SystemClock.uptimeMillis(); // current time
-            requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
-
-            // get raw data from JSON response
-            double xAxisRawData = getRawDataFromResponse_xAxis(response);
-            double yAxisRawData = getRawDataFromResponse_yAxis(response);
-            double centerRawData = getRawDataFromResponse_center(response);
-
-            // update chart
-            if (isNaN(xAxisRawData) || isNaN(yAxisRawData) || isNaN(centerRawData)) {
-                errorHandling(CommonData.ERROR_NAN_DATA);
-            }
-            else {
-
-                // update plot series
-                double timeStamp = requestTimerTimeStamp / 1000.0; // [sec]
-                boolean scrollGraph = (timeStamp > dataGraphMaxX);
-                joystickDataSeries.appendData(new DataPoint(xAxisRawData, yAxisRawData), true, dataGraphMaxDataPointsNumber);
-
-                // refresh chart
-                joystickDataGraph.onDataChanged(true, true);
-
-                //refresh number of center button clicks
-                final String centerRawDataString = Double.toString(getRawDataFromResponse_center(response));
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        centerClickNb.setText(centerRawDataString);;
-                    }
-                });
-            }
-
-            // remember previous time stamp
-            requestTimerPreviousTime = requestTimerCurrentTime;
-        }
-    }
-    */
-
-    /**
-     * @brief Validation of client-side time stamp based on 'SystemClock'.
-     */
-    /*
-    private long getValidTimeStampIncrease(long currentTime) {
-        // Right after start remember current time and return 0
-        if (requestTimerFirstRequest) {
-            requestTimerPreviousTime = currentTime;
-            requestTimerFirstRequest = false;
-            return 0;
-        }
-
-        // After each stop return value not greater than sample time
-        // to avoid "holes" in the plot
-        if (requestTimerFirstRequestAfterStop) {
-            if ((currentTime - requestTimerPreviousTime) > sampleTime)
-                requestTimerPreviousTime = currentTime - sampleTime;
-
-            requestTimerFirstRequestAfterStop = false;
-        }
-
-        // If time difference is equal zero after start
-        // return sample time
-        if ((currentTime - requestTimerPreviousTime) == 0)
-            return sampleTime;
-
-        // Return time difference between current and previous request
-        return (currentTime - requestTimerPreviousTime);
-    }*/
 }

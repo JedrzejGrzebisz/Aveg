@@ -16,7 +16,8 @@ public class RpyOptionsActivity extends AppCompatActivity implements AdapterView
     /* BEGIN config widgets */
     private EditText ipEditText;
     private EditText sampleTimeEditText;
-    private String unit;
+    private String rpyUnit;
+    private ArrayAdapter<CharSequence> adapter;
     /* END config widgets */
 
     @Override
@@ -40,7 +41,7 @@ public class RpyOptionsActivity extends AppCompatActivity implements AdapterView
 
         //Initialize spinner
         Spinner rpyUnitPicked = findViewById(R.id.rpyUnitPicked);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.rpyUnit, android.R.layout.simple_spinner_item);
+        adapter = ArrayAdapter.createFromResource(this, R.array.rpyUnit, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         rpyUnitPicked.setAdapter(adapter);
         rpyUnitPicked.setOnItemSelectedListener(this);
@@ -51,15 +52,15 @@ public class RpyOptionsActivity extends AppCompatActivity implements AdapterView
         Intent intent = new Intent();
         intent.putExtra(CommonData.CONFIG_IP_ADDRESS, ipEditText.getText().toString());
         intent.putExtra(CommonData.CONFIG_SAMPLE_TIME, sampleTimeEditText.getText().toString());
-        intent.putExtra("unit", unit);
+        intent.putExtra(CommonData.CONFIG_RPY_UNIT, rpyUnit);
         setResult(RESULT_OK, intent);
         finish();
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        unit = parent.getItemAtPosition(position).toString();
-        //Toast.makeText(parent.getContext(), unit, Toast.LENGTH_SHORT).show();
+        rpyUnit = parent.getItemAtPosition(position).toString();
+        //Toast.makeText(parent.getContext(), rpyUnit, Toast.LENGTH_SHORT).show();
     }
 
     @Override
