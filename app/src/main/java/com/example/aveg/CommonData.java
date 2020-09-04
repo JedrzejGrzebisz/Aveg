@@ -29,10 +29,9 @@ public final class CommonData {
     public final static int ERROR_RESPONSE = -3;
 
     // IoT server data
-    public final static String WEATHER_FILE_NAME = "AndroidTasks/weatherCondition.json";
-    public final static String RPY_RAD_FILE_NAME = "jQuery/webApp/rpyValueRad.json";
-    public final static String JOYSTICK_FILE_NAME = "SH_5/joystick.json";
-    public final static String FILE_NAME4 = "AndroidTasks/weatherCondition.php";
-    public final static String RPY_DEG_FILE_NAME = "jQuery/webApp/rpyValueDeg.json";
-
+    public final static String WEATHER_FILE_NAME = "Project/weatherCondition.json";
+    public final static String RPY_RAD_FILE_NAME = "Project/rpyValueRad.json";
+    public final static String RPY_DEG_FILE_NAME = "Project/rpyValueDeg.json";
+    public final static String JOYSTICK_FILE_NAME = "Project/joystick.json";
+    
 }

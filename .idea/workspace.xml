@@ -31,9 +31,11 @@
       <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/CommonData.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/CommonData.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/JoystickActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/JoystickActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/RpyActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/RpyActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/RpyOptionsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/RpyOptionsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/WeatherActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/WeatherActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/SingleLedActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/SingleLedActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/TextLedActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/TextLedActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/WeatherOptionsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/WeatherOptionsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -200,22 +202,22 @@
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="580" y="185" key="FileChooserDialogImpl/0.0.1600.860@0.0.1600.860" timestamp="1598552883623" />
-    <state width="1557" height="164" key="GridCell.Tab.0.bottom" timestamp="1598655681966">
+    <state width="769" height="50" key="GridCell.Tab.0.bottom" timestamp="1599229750979">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="164" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1598655681966" />
-    <state width="1557" height="164" key="GridCell.Tab.0.center" timestamp="1598655681965">
+    <state width="769" height="50" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1599229750979" />
+    <state width="769" height="50" key="GridCell.Tab.0.center" timestamp="1599229750978">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="164" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1598655681965" />
-    <state width="1557" height="164" key="GridCell.Tab.0.left" timestamp="1598655681965">
+    <state width="769" height="50" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1599229750978" />
+    <state width="769" height="50" key="GridCell.Tab.0.left" timestamp="1599229750978">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="164" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1598655681965" />
-    <state width="1557" height="164" key="GridCell.Tab.0.right" timestamp="1598655681965">
+    <state width="769" height="50" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1599229750978" />
+    <state width="769" height="50" key="GridCell.Tab.0.right" timestamp="1599229750979">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1557" height="164" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1598655681965" />
+    <state width="769" height="50" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1599229750979" />
     <state x="301" y="72" key="SettingsEditor" timestamp="1598447200921">
       <screen x="0" y="0" width="1600" height="860" />
     </state>

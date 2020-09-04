@@ -23,7 +23,10 @@ import java.util.Map;
 
 public class SingleLedActivity extends AppCompatActivity {
 
+    //Pola tekstowe do wprowadzenia informacji
     EditText rowNb, colNb, ledColor;
+
+    //Adres URL do pliku PHP na serwerze
     String url = "http://192.168.56.22/AndroidTasks/singleLedColor.php";
 
     private RequestQueue queue;
@@ -40,6 +43,10 @@ public class SingleLedActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(SingleLedActivity.this);
     }
 
+    /**
+     * @param v view
+     * @brief Funkcja startująca widok wyświetlania tekstu
+     */
     public void changeToTextLedActivity(View v) {
         if (v.getId() == R.id.goToTextLedBtn)
         {
@@ -47,30 +54,10 @@ public class SingleLedActivity extends AppCompatActivity {
         }
     }
 
-    private String changeColorToNb(String colorString) {
-        String colorNb;
-        switch (colorString) {
-            case "red":
-                colorNb = "10";
-                break;
-            case "green":
-                colorNb = "20";
-                break;
-            case "blue":
-                colorNb = "30";
-                break;
-            case "orange":
-                colorNb = "40";
-                break;
-            case "white":
-                colorNb = "50";
-                break;
-            default:
-                colorNb = "0";
-        }
-        return colorNb;
-    }
-
+    /**
+     * @brief Zapisuje parametry diody do zapalenia
+     * @retval Parametry diody w postaci HashMapy
+     */
     public Map<String, String> getLedDisplayParams() {
         Map<String, String> params = new HashMap<String, String>();
 
@@ -81,18 +68,16 @@ public class SingleLedActivity extends AppCompatActivity {
         params.put("column", colNbText);
 
         String ledColorText = ledColor.getText().toString();
-        //ledColorText = changeColorToNb(ledColorText);
         params.put("color", ledColorText);
 
-        //TextView someText = findViewById(R.id.testText);
-        //someText.setText(String.format("%s%s%s", params.get("row"), params.get("column"), params.get("color")));
-        //someText.setText(params.get("column"));
         return params;
     }
 
+    /**
+     * @brief Wysłanie zapytania POST, aby zapalić diodę
+     */
     public void sendControlRequest(View v)
     {
-
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,
             new Response.Listener<String>()
             {

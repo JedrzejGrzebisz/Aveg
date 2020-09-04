@@ -69,9 +69,9 @@ public class WeatherOptionsActivity extends AppCompatActivity implements Adapter
         Intent intent = new Intent();
         intent.putExtra(CommonData.CONFIG_IP_ADDRESS, ipEditText.getText().toString());
         intent.putExtra(CommonData.CONFIG_SAMPLE_TIME, sampleTimeEditText.getText().toString());
-        intent.putExtra("temperatureUnit", temperatureUnit);
-        intent.putExtra("pressureUnit", pressureUnit);
-        intent.putExtra("humidityUnit", humidityUnit);
+        intent.putExtra(CommonData.CONFIG_TEMPERATURE_UNIT, temperatureUnit);
+        intent.putExtra(CommonData.CONFIG_PRESSURE_UNIT, pressureUnit);
+        intent.putExtra(CommonData.CONFIG_HUMIDITY_UNIT, humidityUnit);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -94,6 +94,6 @@ public class WeatherOptionsActivity extends AppCompatActivity implements Adapter
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-
+        //nothing
     }
 }

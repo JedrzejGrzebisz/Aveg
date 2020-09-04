@@ -23,7 +23,10 @@ import java.util.Map;
 
 public class TextLedActivity extends AppCompatActivity {
 
+    //Pola tekstowe do wprowadzenia informacji
     EditText ledMsg, ledColor;
+
+    //Adres URL do pliku PHP na serwerze
     String url = "http://192.168.56.22/AndroidTasks/textLedColor.php";
 
     private RequestQueue queue;
@@ -35,9 +38,14 @@ public class TextLedActivity extends AppCompatActivity {
 
         ledMsg = findViewById(R.id.userInputTextLed);
         ledColor = findViewById(R.id.userInputTextLedColor);
+
         queue = Volley.newRequestQueue(TextLedActivity.this);
     }
 
+    /**
+     * @param v view
+     * @brief Funkcja startująca widok zapalania pojedynczej diody
+     */
     public void changeToSingleLedActivity(View v) {
         if (v.getId() == R.id.goToSingleLedBtn)
         {
@@ -45,47 +53,25 @@ public class TextLedActivity extends AppCompatActivity {
         }
     }
 
-    private String changeColorToNb(String colorString) {
-        String colorNb;
-        switch (colorString) {
-            case "red":
-                colorNb = "10";
-                break;
-            case "green":
-                colorNb = "20";
-                break;
-            case "blue":
-                colorNb = "30";
-                break;
-            case "orange":
-                colorNb = "40";
-                break;
-            case "white":
-                colorNb = "50";
-                break;
-            default:
-                colorNb = "0";
-        }
-        return colorNb;
-    }
-
+    /**
+     * @brief Zapisuje tekst do wyświetlenia i jego kolor
+     * @retval Parametry w postaci HashMapy
+     */
     public Map<String, String> getLedDisplayParams() {
-        Map<String, String> params = new HashMap<String, String>();
-
+        Map<String, String> params = new HashMap<>();
 
         String ledMsgText = ledMsg.getText().toString();
         params.put("text", ledMsgText);
 
         String ledColorText = ledColor.getText().toString();
-        //ledColorText = changeColorToNb(ledColorText);
         params.put("color", ledColorText);
 
-        //TextView someText1 = findViewById(R.id.testText1);
-        //someText1.setText(String.format("%s%s", params.get("text"), params.get("color")));
-        //someText1.setText(params.get("text"));
         return params;
     }
 
+    /**
+     * @brief Wysłanie zapytania POST, aby zapalić diodę
+     */
     public void sendControlRequestTxt(View v)
     {
         StringRequest postRequest = new StringRequest(Request.Method.POST, url,

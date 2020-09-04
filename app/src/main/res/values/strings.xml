@@ -6,8 +6,8 @@
     <string name="optionsBtn">OPCJE</string>
 
     <string-array name="rpyUnit">
-        <item>deg</item>
         <item>rad</item>
+        <item>deg</item>
     </string-array>
     <string-array name="temperatureUnit">
         <item>C</item>

@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class RpyOptionsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class RpyOptionsActivity extends AppCompatActivity {
 
     /* BEGIN config widgets */
     private EditText ipEditText;
@@ -44,7 +44,18 @@ public class RpyOptionsActivity extends AppCompatActivity implements AdapterView
         adapter = ArrayAdapter.createFromResource(this, R.array.rpyUnit, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         rpyUnitPicked.setAdapter(adapter);
-        rpyUnitPicked.setOnItemSelectedListener(this);
+        rpyUnitPicked.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                rpyUnit = parent.getItemAtPosition(position).toString();
+                //Toast.makeText(parent.getContext(), rpyUnit, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     @Override
@@ -57,6 +68,7 @@ public class RpyOptionsActivity extends AppCompatActivity implements AdapterView
         finish();
     }
 
+    /*
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         rpyUnit = parent.getItemAtPosition(position).toString();
@@ -66,5 +78,5 @@ public class RpyOptionsActivity extends AppCompatActivity implements AdapterView
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
-    }
+    }*/
 }

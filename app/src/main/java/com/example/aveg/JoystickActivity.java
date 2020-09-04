@@ -28,6 +28,9 @@ import com.jjoe64.graphview.series.PointsGraphSeries;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,7 +40,6 @@ public class JoystickActivity extends AppCompatActivity {
 
     /* BEGIN config data */
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
-    private int sampleTime = CommonData.DEFAULT_SAMPLE_TIME;
     /* END config data */
 
     /* BEGIN widgets */
@@ -45,6 +47,8 @@ public class JoystickActivity extends AppCompatActivity {
     private TextView centerClickNb;
 
     private PointsGraphSeries<DataPoint> joystickDataSeries;
+    private List<Integer> joystickValuesList;
+    /* END widgets */
 
     //max and min ranges for x and y axes
     private final int dataGraphMaxDataPointsNumber = 10000;
@@ -55,25 +59,11 @@ public class JoystickActivity extends AppCompatActivity {
     private final double rpyDataGraphMaxY = 5;
     private final double rpyDataGraphMinY = -5;
 
-    private AlertDialog.Builder configAlertDialog;
-
-
     Handler handler = new Handler();
     Runnable runnable;
-    int delay = 300;
-    double xAxisRawDataOld;
-    double yAxisRawDataOld;
+    int delay = 300; //refreshing chart and counter
 
-    /* BEGIN request timer */
     private RequestQueue queue;
-    private Timer requestTimer;
-    private long requestTimerTimeStamp = 0;
-    private long requestTimerPreviousTime = -1;
-    private boolean requestTimerFirstRequest = true;
-    private boolean requestTimerFirstRequestAfterStop;
-    private TimerTask requestTimerTask;
-    //private final Handler handler = new Handler();
-    /* END request timer */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,10 +108,11 @@ public class JoystickActivity extends AppCompatActivity {
         /* END initialize GraphView */
         queue = Volley.newRequestQueue(JoystickActivity.this);
 
-        //Start timer
-        //startRequestTimer();
     }
 
+    /**
+     * @note Uruchomienie widoku powoduje wysyłanie zapytania, co określony czas
+     */
     @Override
     protected void onResume() {
         handler.postDelayed(runnable = new Runnable() {
@@ -133,162 +124,61 @@ public class JoystickActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    /**
+     * @note Zamknięcie widoku przerywa działanie handlera
+     */
     @Override
     protected void onStop() {
         handler.removeCallbacks(runnable); //stop handler when activity not visible
         super.onStop();
     }
 
-    /*
+    /**
+     * @note Naciśnięcie powrotu przerywa działanie handlera
+     */
     @Override
     public void onBackPressed() {
-        stopRequestTimerTask();
-        finish();
+        handler.removeCallbacks(runnable); //stop handler when back pressed
+        super.onBackPressed();
     }
-    */
 
-    /* BEGIN config alert dialog */
-    /*
-    public void dialogAlertShow() {
-        configAlertDialog = new AlertDialog.Builder(JoystickActivity.this);
-        configAlertDialog.setTitle("Pobieranie danych zostanie zatrzymane");
-        configAlertDialog.setIcon(android.R.drawable.ic_dialog_alert);
-        configAlertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                stopRequestTimerTask();
-                openWeatherOptions();
-            }
-        });
-        configAlertDialog.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        configAlertDialog.setCancelable(false);
-        configAlertDialog.show();
-    }*/
-    /* END config alter dialog */
-
-    /*
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent dataIntent) {
-        super.onActivityResult(requestCode, resultCode, dataIntent);
-        if ((requestCode == CommonData.REQUEST_CODE_CONFIG) && (resultCode == RESULT_OK)) {
-
-            // IoT server IP address
-            ipAddress = dataIntent.getStringExtra(CommonData.CONFIG_IP_ADDRESS);
-
-            // Sample time (ms)
-            String sampleTimeText = dataIntent.getStringExtra(CommonData.CONFIG_SAMPLE_TIME);
-            assert sampleTimeText != null;
-            sampleTime = Integer.parseInt(sampleTimeText);
-        }
-    }*/
-
-    /*
-    public void btnsRpy_onClick(View v) {
-        switch (v.getId()) {
-            case R.id.goToRpyOptionsBtn: {
-                if (requestTimer != null)
-                    dialogAlertShow();
-                else
-                    openWeatherOptions();
-                break;
-            }
-            case R.id.startRpyChartsBtn: {
-                startRequestTimer();
-                break;
-            }
-            case R.id.stopRpyChartsBtn: {
-                stopRequestTimerTask();
-                break;
-            }
-            default: {
-                // do nothing
-            }
-        }
-    }*/
-
+    /**
+     * @param ip adres IP serwera na którym znajduje się plik
+     * @brief Zwraca adres URL do pliku z danymi
+     * @retval pełen adres URL do pliku z danymi
+     */
     private String getURL(String ip) {
         return ("http://" + ip + "/" + CommonData.JOYSTICK_FILE_NAME);
     }
 
-    /*
-    private void openWeatherOptions() {
-        Intent openConfigIntent = new Intent(RpyActivity.this, WeatherOptionsActivity.class);
-        Bundle configBundle = new Bundle();
-        configBundle.putString(CommonData.CONFIG_IP_ADDRESS, ipAddress);
-        configBundle.putInt(CommonData.CONFIG_SAMPLE_TIME, sampleTime);
-        openConfigIntent.putExtras(configBundle);
-        startActivityForResult(openConfigIntent, CommonData.REQUEST_CODE_CONFIG);
-    }*/
-
     /**
-     * @param response IoT server JSON response as string
-     * @brief Reading raw chart data from JSON response.
-     * @retval new chart data
+     * @param response odpowiedź serwera jako JSON string
+     * @brief Odczytuje dane z pliku JSON
+     * @retval dane o joysticku w postaci listy
      */
-
-    private double getRawDataFromResponse_xAxis(String response) {
+    private List<Integer> getRawDataFromResponse(String response) {
         JSONObject jObject;
-        double x = Double.NaN;
+        joystickValuesList = new ArrayList<>();
 
         // Create generic JSON object form string
         try {
             jObject = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
-            return x;
+            return null;
         }
         // Read chart data form JSON object
         try {
-            x = (int) jObject.get("xAxis");
+            int x = (int) jObject.get("xAxis");
+            int y = (int) jObject.get("yAxis");
+            int middle = (int) jObject.get("center");
+            joystickValuesList.add(x);
+            joystickValuesList.add(y);
+            joystickValuesList.add(middle);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return x;
-    }
-
-    private double getRawDataFromResponse_yAxis(String response) {
-        JSONObject jObject;
-        double y = Double.NaN;
-
-        // Create generic JSON object form string
-        try {
-            jObject = new JSONObject(response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return y;
-        }
-
-        // Read chart data form JSON object
-        try {
-            y = (int) jObject.get("yAxis");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return y;
-    }
-
-    private double getRawDataFromResponse_center(String response) {
-        JSONObject jObject;
-        double x = Double.NaN;
-
-        // Create generic JSON object form string
-        try {
-            jObject = new JSONObject(response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return x;
-        }
-
-        // Read chart data form JSON object
-        try {
-            x = (int) jObject.get("center");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return x;
+        return joystickValuesList;
     }
 
     /**
@@ -315,6 +205,10 @@ public class JoystickActivity extends AppCompatActivity {
         queue.add(stringRequest);
     }
 
+    /**
+     * @param errorCode kod błędu
+     * @brief obsługa błędu w przypadku jego wystąpienia
+     */
     private void errorHandling(int errorCode) {
         Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
         errorToast.show();
@@ -322,16 +216,16 @@ public class JoystickActivity extends AppCompatActivity {
     }
 
     /**
+     * @param response odpowiedź serwera jako JSON string
      * @brief GET response handling - chart data series updated with IoT server data.
      */
-
     private void responseHandling(String response) {
 
         joystickDataSeries.resetData(new DataPoint[]{});
 
-        double xAxisRawData = getRawDataFromResponse_xAxis(response);
-        double yAxisRawData = getRawDataFromResponse_yAxis(response);
-        double centerRawData = getRawDataFromResponse_center(response);
+        int xAxisRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(0);
+        int yAxisRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(1);
+        int centerRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(2);
 
         if (isNaN(xAxisRawData) || isNaN(yAxisRawData) || isNaN(centerRawData)) {
             errorHandling(CommonData.ERROR_NAN_DATA);
@@ -344,7 +238,7 @@ public class JoystickActivity extends AppCompatActivity {
             joystickDataGraph.onDataChanged(true, true);
 
             //refresh number of center button clicks
-            final String centerRawDataString = Double.toString(centerRawData);
+            final String centerRawDataString = Integer.toString(centerRawData);
             centerClickNb.setText(centerRawDataString);
         }
     }
