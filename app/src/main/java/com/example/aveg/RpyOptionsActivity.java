@@ -48,12 +48,11 @@ public class RpyOptionsActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 rpyUnit = parent.getItemAtPosition(position).toString();
-                //Toast.makeText(parent.getContext(), rpyUnit, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                //nothing
             }
         });
     }

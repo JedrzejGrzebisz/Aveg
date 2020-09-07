@@ -249,7 +249,7 @@ public class RpyActivity extends AppCompatActivity {
             jObject = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
-            return null;
+            return rpyValuesList;
         }
         // Read chart data form JSON object
         try {
@@ -407,9 +407,9 @@ public class RpyActivity extends AppCompatActivity {
             requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
 
             // get raw data from JSON response
-            double rollRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(0);
-            double pitchRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(1);
-            double yawRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(2);
+            double rollRawData = getRawDataFromResponse(response).get(0);
+            double pitchRawData = getRawDataFromResponse(response).get(1);
+            double yawRawData = getRawDataFromResponse(response).get(2);
 
             // update chart
             if (isNaN(rollRawData) || isNaN(pitchRawData) || isNaN(yawRawData)) {

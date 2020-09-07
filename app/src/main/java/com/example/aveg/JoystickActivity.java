@@ -165,7 +165,7 @@ public class JoystickActivity extends AppCompatActivity {
             jObject = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
-            return null;
+            return joystickValuesList;
         }
         // Read chart data form JSON object
         try {
@@ -223,9 +223,9 @@ public class JoystickActivity extends AppCompatActivity {
 
         joystickDataSeries.resetData(new DataPoint[]{});
 
-        int xAxisRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(0);
-        int yAxisRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(1);
-        int centerRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(2);
+        int xAxisRawData = getRawDataFromResponse(response).get(0);
+        int yAxisRawData = getRawDataFromResponse(response).get(1);
+        int centerRawData = getRawDataFromResponse(response).get(2);
 
         if (isNaN(xAxisRawData) || isNaN(yAxisRawData) || isNaN(centerRawData)) {
             errorHandling(CommonData.ERROR_NAN_DATA);

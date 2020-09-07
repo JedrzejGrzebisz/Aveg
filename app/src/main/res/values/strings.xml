@@ -18,7 +18,7 @@
         <item>mmHg</item>
     </string-array>
     <string-array name="humidityUnit">
-        <item>%</item>
         <item>0_1</item>
+        <item>%</item>
     </string-array>
 </resources>

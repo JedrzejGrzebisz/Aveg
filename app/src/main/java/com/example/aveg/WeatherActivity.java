@@ -290,7 +290,7 @@ public class WeatherActivity extends AppCompatActivity {
             jObject = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
-            return null;
+            return weatherValuesList;
         }
         // Read chart data form JSON object
         try {
@@ -388,27 +388,6 @@ public class WeatherActivity extends AppCompatActivity {
         errorToast.show();
     }
 
-    /*
-    private void sendPostRequest()
-    {
-        String url = "http://" + ipAddress + "/" + CommonData.FILE_NAME4;
-        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        //PHP run python
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("Error response", "Error");
-                    }
-                }
-        );
-        queue.add(postRequest);
-    }*/
-
     /**
      * @brief GET response handling - chart data series updated with IoT server data.
      */
@@ -419,9 +398,9 @@ public class WeatherActivity extends AppCompatActivity {
             requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
 
             // get raw data from JSON response
-            double temperatureRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(0);
-            double pressureRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(1);
-            double humidityRawData = Objects.requireNonNull(getRawDataFromResponse(response)).get(2);
+            double temperatureRawData = getRawDataFromResponse(response).get(0);
+            double pressureRawData = getRawDataFromResponse(response).get(1);
+            double humidityRawData = getRawDataFromResponse(response).get(2);
 
             // update chart
             if (isNaN(temperatureRawData)) {
