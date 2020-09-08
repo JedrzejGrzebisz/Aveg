@@ -1,8 +1,10 @@
 package com.example.aveg;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -50,6 +52,9 @@ public class RpyActivity extends AppCompatActivity {
     private LineGraphSeries<DataPoint> yawDataSeries;
 
     private List<Double> rpyValuesList;
+    double rollRawData;
+    double pitchRawData;
+    double yawRawData;
 
     //max and min ranges for x and y axes
     private final int dataGraphMaxDataPointsNumber = 1000;
@@ -76,6 +81,8 @@ public class RpyActivity extends AppCompatActivity {
     private TimerTask requestTimerTask;
     private final Handler handler = new Handler();
     /* END request timer */
+
+    SharedPreferences userSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +128,13 @@ public class RpyActivity extends AppCompatActivity {
         yawDataSeries.setColor(Color.GREEN);
 
         /* END initialize GraphView */
+
+        userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
+        String ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
+        int sampleTimePref = userSettings.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
+        ipAddress = ipAddressPref;
+        sampleTime = sampleTimePref;
+
         queue = Volley.newRequestQueue(RpyActivity.this);
 
     }
@@ -394,7 +408,7 @@ public class RpyActivity extends AppCompatActivity {
 
     private void errorHandling(int errorCode) {
         Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
-        errorToast.show();
+        //errorToast.show();
     }
 
     /**
@@ -407,10 +421,11 @@ public class RpyActivity extends AppCompatActivity {
             requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
 
             // get raw data from JSON response
-            double rollRawData = getRawDataFromResponse(response).get(0);
-            double pitchRawData = getRawDataFromResponse(response).get(1);
-            double yawRawData = getRawDataFromResponse(response).get(2);
-
+            if (getRawDataFromResponse(response).size() != 0) {
+                rollRawData = getRawDataFromResponse(response).get(0);
+                pitchRawData = getRawDataFromResponse(response).get(1);
+                yawRawData = getRawDataFromResponse(response).get(2);
+            }
             // update chart
             if (isNaN(rollRawData) || isNaN(pitchRawData) || isNaN(yawRawData)) {
                 errorHandling(CommonData.ERROR_NAN_DATA);

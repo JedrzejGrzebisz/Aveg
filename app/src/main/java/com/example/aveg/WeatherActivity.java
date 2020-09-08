@@ -1,8 +1,10 @@
 package com.example.aveg;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -56,6 +58,9 @@ public class WeatherActivity extends AppCompatActivity {
     private LineGraphSeries<DataPoint> humidityDataSeries;
 
     private List<Double> weatherValuesList;
+    double temperatureRawData;
+    double pressureRawData;
+    double humidityRawData;
 
     //max and min ranges for x and y axes
     private final int dataGraphMaxDataPointsNumber = 1000;
@@ -90,6 +95,8 @@ public class WeatherActivity extends AppCompatActivity {
     private TimerTask requestTimerTask;
     private final Handler handler = new Handler();
     /* END request timer */
+
+    SharedPreferences userSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,8 +140,14 @@ public class WeatherActivity extends AppCompatActivity {
 
         //Setting ranges, axis titles and grid for GraphView(depends on unit)
         setRangesAndTitles();
-
         /* END initialize GraphView */
+
+        userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
+        String ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
+        int sampleTimePref = userSettings.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
+        ipAddress = ipAddressPref;
+        sampleTime = sampleTimePref;
+
         queue = Volley.newRequestQueue(WeatherActivity.this);
     }
 
@@ -398,12 +411,14 @@ public class WeatherActivity extends AppCompatActivity {
             requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
 
             // get raw data from JSON response
-            double temperatureRawData = getRawDataFromResponse(response).get(0);
-            double pressureRawData = getRawDataFromResponse(response).get(1);
-            double humidityRawData = getRawDataFromResponse(response).get(2);
+            if (getRawDataFromResponse(response).size() != 0) {
+                temperatureRawData = getRawDataFromResponse(response).get(0);
+                pressureRawData = getRawDataFromResponse(response).get(1);
+                humidityRawData = getRawDataFromResponse(response).get(2);
+            }
 
             // update chart
-            if (isNaN(temperatureRawData)) {
+            if (isNaN(temperatureRawData) || isNaN(pressureRawData) || isNaN(humidityRawData)) {
                 errorHandling(CommonData.ERROR_NAN_DATA);
 
             } else {

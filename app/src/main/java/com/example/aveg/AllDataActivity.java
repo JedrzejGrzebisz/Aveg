@@ -3,12 +3,16 @@ package com.example.aveg;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +44,7 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     private String humidityUnit = CommonData.DEFAULT_HUMIDITY_UNIT;
     private String rpyUnit = CommonData.DEFAULT_RPY_UNIT;
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
+    private int sampleTime = CommonData.DEFAULT_SAMPLE_TIME;
 
     private TextView temperatureValue;
     private TextView pressureValue;
@@ -47,6 +52,11 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     private TextView rollValue;
     private TextView pitchValue;
     private TextView yawValue;
+
+    private EditText ipAdressEditText;
+    private EditText sampleTimeEditText;
+
+    private Button setIpAndTpAllData;
 
     Spinner temperatureSpinner;
     Spinner pressureSpinner;
@@ -60,9 +70,14 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     double pitchRawData;
     double yawRawData;
 
+    double temperatureRawData;
+    double pressureRawData;
+    double humidityRawData;
+
     Handler handler = new Handler();
     Runnable runnable;
-    int delay = 300; //refreshing data
+
+    SharedPreferences userSettings;
 
     private RequestQueue queue;
 
@@ -103,7 +118,42 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
         rpySpinner.setAdapter(rpyAdapter);
         rpySpinner.setOnItemSelectedListener(this);
 
+        userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
+        String ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
+        int sampleTimePref = userSettings.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
+        ipAddress = ipAddressPref;
+        sampleTime = sampleTimePref;
+
+        //Initialize EditText
+        ipAdressEditText = findViewById(R.id.ipAllDataEditText);
+        sampleTimeEditText = findViewById(R.id.tpAllDataEditText);
+        ipAdressEditText.setText(ipAddress);
+        sampleTimeEditText.setText(Integer.toString(sampleTime));
+
+        //Initialize Button
+        setIpAndTpAllData = findViewById(R.id.setIpAndTpAllData);
+
         queue = Volley.newRequestQueue(AllDataActivity.this);
+    }
+
+    public void setTpAndIp(View v)
+    {
+        if (v.getId() == setIpAndTpAllData.getId())
+        {
+            if (!ipAdressEditText.getText().toString().equals("") && !sampleTimeEditText.getText().toString().equals(""))
+            {
+                ipAddress = ipAdressEditText.getText().toString();
+                sampleTime = Integer.parseInt(sampleTimeEditText.getText().toString());
+            }
+            else
+            {
+                ipAddress = CommonData.DEFAULT_IP_ADDRESS;
+                sampleTime = CommonData.DEFAULT_SAMPLE_TIME;
+                Toast.makeText(this, "Nie podałeś IP lub TP, ustawiono wartości domyślne", Toast.LENGTH_LONG).show();
+            }
+            sampleTimeEditText.setText(Integer.toString(sampleTime));
+            ipAdressEditText.setText(ipAddress);
+        }
     }
 
     @Override
@@ -138,11 +188,11 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     protected void onResume() {
         handler.postDelayed(runnable = new Runnable() {
             public void run() {
-                handler.postDelayed(runnable, delay);
+                handler.postDelayed(runnable, sampleTime);
                 sendGetRequestWeather();
                 sendGetRequestRpy();
             }
-        }, delay);
+        }, sampleTime);
         super.onResume();
     }
 
@@ -315,8 +365,8 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
      * @brief obsługa błędu w przypadku jego wystąpienia
      */
     private void errorHandling(int errorCode) {
-        Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
-        errorToast.show();
+        //Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
+        //errorToast.show();
     }
 
     /**
@@ -349,10 +399,11 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     private void responseHandlingWeather(String response) {
 
         // get raw data from JSON response
-        double temperatureRawData = round(getRawDataFromResponseWeather(response).get(0), 2);
-        double pressureRawData = round(getRawDataFromResponseWeather(response).get(1), 2);
-        double humidityRawData = round(getRawDataFromResponseWeather(response).get(2), 2);
-
+        if (getRawDataFromResponseWeather(response).size() != 0) {
+            temperatureRawData = round(getRawDataFromResponseWeather(response).get(0), 2);
+            pressureRawData = round(getRawDataFromResponseWeather(response).get(1), 2);
+            humidityRawData = round(getRawDataFromResponseWeather(response).get(2), 2);
+        }
         // update chart
         if (isNaN(temperatureRawData) || isNaN(pressureRawData) || isNaN(humidityRawData)) {
             errorHandling(CommonData.ERROR_NAN_DATA);

@@ -1,11 +1,14 @@
 package com.example.aveg;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -25,9 +28,10 @@ public class TextLedActivity extends AppCompatActivity {
 
     //Pola tekstowe do wprowadzenia informacji
     EditText ledMsg, ledColor;
+    EditText ipAddressEditText;
 
-    //Adres URL do pliku PHP na serwerze
-    String url = "http://192.168.56.22/AndroidTasks/textLedColor.php";
+    String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
+    SharedPreferences userSettings;
 
     private RequestQueue queue;
 
@@ -38,6 +42,12 @@ public class TextLedActivity extends AppCompatActivity {
 
         ledMsg = findViewById(R.id.userInputTextLed);
         ledColor = findViewById(R.id.userInputTextLedColor);
+        ipAddressEditText = findViewById(R.id.ipTextled);
+
+        userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
+        String ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
+        ipAddress = ipAddressPref;
+        ipAddressEditText.setText(ipAddress);
 
         queue = Volley.newRequestQueue(TextLedActivity.this);
     }
@@ -51,6 +61,10 @@ public class TextLedActivity extends AppCompatActivity {
         {
             startActivity(new Intent(TextLedActivity.this, SingleLedActivity.class));
         }
+    }
+
+    private String getURL(String ip) {
+        return ("http://" + ip + "/" + CommonData.TEXT_LED_FILE_NAME);
     }
 
     /**
@@ -74,7 +88,18 @@ public class TextLedActivity extends AppCompatActivity {
      */
     public void sendControlRequestTxt(View v)
     {
-        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+        if (!ipAddressEditText.getText().toString().equals(""))
+        {
+            ipAddress = ipAddressEditText.getText().toString();
+        }
+        else
+        {
+            ipAddress = CommonData.DEFAULT_IP_ADDRESS;
+            Toast.makeText(this, "Nie podałeś IP, wybrano domyślne!", Toast.LENGTH_LONG).show();
+        }
+        ipAddressEditText.setText(ipAddress);
+
+        StringRequest postRequest = new StringRequest(Request.Method.POST, getURL(ipAddress),
                 new Response.Listener<String>()
                 {
                     @Override

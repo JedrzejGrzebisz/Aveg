@@ -33,5 +33,7 @@ public final class CommonData {
     public final static String RPY_RAD_FILE_NAME = "Project/rpyValueRad.json";
     public final static String RPY_DEG_FILE_NAME = "Project/rpyValueDeg.json";
     public final static String JOYSTICK_FILE_NAME = "Project/joystick.json";
+    public final static String SINGLE_LED_FILE_NAME = "Project/singleLedColor.php";
+    public final static String TEXT_LED_FILE_NAME = "Project/textLedColor.php";
     
 }

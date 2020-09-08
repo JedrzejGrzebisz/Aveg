@@ -60,22 +60,19 @@ public class RpyOptionsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        intent.putExtra(CommonData.CONFIG_IP_ADDRESS, ipEditText.getText().toString());
-        intent.putExtra(CommonData.CONFIG_SAMPLE_TIME, sampleTimeEditText.getText().toString());
+        if (!ipEditText.getText().toString().equals("") && !sampleTimeEditText.getText().toString().equals(""))
+        {
+            intent.putExtra(CommonData.CONFIG_IP_ADDRESS, ipEditText.getText().toString());
+            intent.putExtra(CommonData.CONFIG_SAMPLE_TIME, sampleTimeEditText.getText().toString());
+        }
+        else
+        {
+            intent.putExtra(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
+            intent.putExtra(CommonData.CONFIG_SAMPLE_TIME, "500");
+        }
         intent.putExtra(CommonData.CONFIG_RPY_UNIT, rpyUnit);
         setResult(RESULT_OK, intent);
         finish();
     }
 
-    /*
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        rpyUnit = parent.getItemAtPosition(position).toString();
-        //Toast.makeText(parent.getContext(), rpyUnit, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }*/
 }

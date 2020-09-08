@@ -23,20 +23,29 @@
       <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/classAnalysis.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/jarAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/jarAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/javaCompile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.1.1/javaCompile/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/AllDataActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/AllDataActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/CommonData.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/CommonData.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/JoystickActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/JoystickActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/MainActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/RpyActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/RpyActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/RpyOptionsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/RpyOptionsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/SettingsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/SingleLedActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/SingleLedActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/TextLedActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/TextLedActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/WeatherActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/WeatherActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/WeatherOptionsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/aveg/WeatherOptionsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_all_data.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_all_data.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_single_led.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_single_led.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_text_led.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_text_led.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -206,22 +215,22 @@
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="580" y="185" key="FileChooserDialogImpl/0.0.1600.860@0.0.1600.860" timestamp="1598552883623" />
-    <state width="769" height="50" key="GridCell.Tab.0.bottom" timestamp="1599229750979">
+    <state width="1484" height="108" key="GridCell.Tab.0.bottom" timestamp="1599583230291">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="769" height="50" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1599229750979" />
-    <state width="769" height="50" key="GridCell.Tab.0.center" timestamp="1599229750978">
+    <state width="1484" height="108" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1599583230291" />
+    <state width="1484" height="108" key="GridCell.Tab.0.center" timestamp="1599583230291">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="769" height="50" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1599229750978" />
-    <state width="769" height="50" key="GridCell.Tab.0.left" timestamp="1599229750978">
+    <state width="1484" height="108" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1599583230291" />
+    <state width="1484" height="108" key="GridCell.Tab.0.left" timestamp="1599583230290">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="769" height="50" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1599229750978" />
-    <state width="769" height="50" key="GridCell.Tab.0.right" timestamp="1599229750979">
+    <state width="1484" height="108" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1599583230290" />
+    <state width="1484" height="108" key="GridCell.Tab.0.right" timestamp="1599583230291">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="769" height="50" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1599229750979" />
+    <state width="1484" height="108" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1599583230291" />
     <state x="301" y="72" key="SettingsEditor" timestamp="1598447200921">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
@@ -238,9 +247,9 @@
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="561" y="274" key="edit.logcat.filter.dialog.dimensions/0.0.1600.860@0.0.1600.860" timestamp="1598529132412" />
-    <state x="1125" y="181" width="672" height="678" key="search.everywhere.popup" timestamp="1598521365958">
+    <state x="558" y="201" width="672" height="678" key="search.everywhere.popup" timestamp="1599583569044">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="1125" y="181" width="672" height="678" key="search.everywhere.popup/0.0.1600.860@0.0.1600.860" timestamp="1598521365958" />
+    <state x="558" y="201" width="672" height="678" key="search.everywhere.popup/0.0.1600.860@0.0.1600.860" timestamp="1599583569044" />
   </component>
 </project>

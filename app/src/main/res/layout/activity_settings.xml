@@ -54,7 +54,7 @@
                     android:textSize="18sp" />
 
                 <EditText
-                    android:id="@+id/userInputIPx"
+                    android:id="@+id/userInputSettingsIp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
@@ -73,20 +73,30 @@
                     android:id="@+id/textViewPort"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Port:"
+                    android:layout_weight="2"
+                    android:text="Czas próbkowania:"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 
                 <EditText
-                    android:id="@+id/userInputPort"
+                    android:id="@+id/userInputSettingsTp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
                     android:ems="10"
-                    android:hint="Twój port"
+                    android:hint="tp[ms]"
                     android:inputType="textPersonName" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/setPrefBtn"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:background="@color/colorPrimary"
+                android:text="USTAW"
+                android:textColor="#000000" />
         </LinearLayout>
 
     </LinearLayout>

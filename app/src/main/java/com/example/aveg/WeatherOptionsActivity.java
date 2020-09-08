@@ -1,6 +1,8 @@
 package com.example.aveg;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,12 +37,12 @@ public class WeatherOptionsActivity extends AppCompatActivity implements Adapter
         Bundle configBundle = intent.getExtras();
 
         ipEditText = findViewById(R.id.userInputIP);
-        String ip = configBundle.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
-        ipEditText.setText(ip);
+        String ipAddress = configBundle.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
+        ipEditText.setText(ipAddress);
 
         sampleTimeEditText = findViewById(R.id.userInputTp);
-        int tp = configBundle.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
-        sampleTimeEditText.setText(Integer.toString(tp));
+        int sampleTime = configBundle.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
+        sampleTimeEditText.setText(Integer.toString(sampleTime));
 
         //Initialize spinners
         temperatureUnitPicked = findViewById(R.id.temperatureUnitPicked);
@@ -67,8 +69,16 @@ public class WeatherOptionsActivity extends AppCompatActivity implements Adapter
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        intent.putExtra(CommonData.CONFIG_IP_ADDRESS, ipEditText.getText().toString());
-        intent.putExtra(CommonData.CONFIG_SAMPLE_TIME, sampleTimeEditText.getText().toString());
+        if (!ipEditText.getText().toString().equals("") && !sampleTimeEditText.getText().toString().equals(""))
+        {
+            intent.putExtra(CommonData.CONFIG_IP_ADDRESS, ipEditText.getText().toString());
+            intent.putExtra(CommonData.CONFIG_SAMPLE_TIME, sampleTimeEditText.getText().toString());
+        }
+        else
+        {
+            intent.putExtra(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
+            intent.putExtra(CommonData.CONFIG_SAMPLE_TIME, "500");
+        }
         intent.putExtra(CommonData.CONFIG_TEMPERATURE_UNIT, temperatureUnit);
         intent.putExtra(CommonData.CONFIG_PRESSURE_UNIT, pressureUnit);
         intent.putExtra(CommonData.CONFIG_HUMIDITY_UNIT, humidityUnit);

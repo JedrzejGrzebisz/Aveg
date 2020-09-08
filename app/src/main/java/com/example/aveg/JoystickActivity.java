@@ -1,8 +1,10 @@
 package com.example.aveg;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -61,7 +63,8 @@ public class JoystickActivity extends AppCompatActivity {
 
     Handler handler = new Handler();
     Runnable runnable;
-    int delay = 300; //refreshing chart and counter
+    int delay = 100; //refreshing chart and counter
+    SharedPreferences userSettings;
 
     private RequestQueue queue;
 
@@ -106,6 +109,11 @@ public class JoystickActivity extends AppCompatActivity {
         joystickDataSeries.setShape(PointsGraphSeries.Shape.POINT);
 
         /* END initialize GraphView */
+
+        userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
+        String ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
+        ipAddress = ipAddressPref;
+
         queue = Volley.newRequestQueue(JoystickActivity.this);
 
     }
@@ -211,8 +219,7 @@ public class JoystickActivity extends AppCompatActivity {
      */
     private void errorHandling(int errorCode) {
         Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
-        errorToast.show();
-        //stopRequestTimerTask();
+        //errorToast.show();
     }
 
     /**
