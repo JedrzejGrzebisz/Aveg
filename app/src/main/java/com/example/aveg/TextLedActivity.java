@@ -26,13 +26,17 @@ import java.util.Map;
 
 public class TextLedActivity extends AppCompatActivity {
 
-    //Pola tekstowe do wprowadzenia informacji
+    //Deklaracja elementów interfejsu użytkownika
     EditText ledMsg, ledColor;
     EditText ipAddressEditText;
 
+    //Ustawienie domyślnej wartości IP
     String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
+
+    //Deklaracja interfejsu z preferencjami użytkownika
     SharedPreferences userSettings;
 
+    //Deklarcja kolejki zapytań
     private RequestQueue queue;
 
     @Override
@@ -40,21 +44,24 @@ public class TextLedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_led);
 
+        //Inicjalizacja elementów interfejsu użytkownika
         ledMsg = findViewById(R.id.userInputTextLed);
         ledColor = findViewById(R.id.userInputTextLedColor);
         ipAddressEditText = findViewById(R.id.ipTextled);
 
+        //Inicjalizacja preferencji, ustawienie aktualnych preferencji IP
         userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
         String ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
         ipAddress = ipAddressPref;
         ipAddressEditText.setText(ipAddress);
 
+        //Inicjalizacja kolejki
         queue = Volley.newRequestQueue(TextLedActivity.this);
     }
 
     /**
-     * @param v view
      * @brief Funkcja startująca widok zapalania pojedynczej diody
+     * @param v Kliknięty element wiodku(np. button, textView)
      */
     public void changeToSingleLedActivity(View v) {
         if (v.getId() == R.id.goToSingleLedBtn)
@@ -63,6 +70,11 @@ public class TextLedActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * @param ip Adres IP serwera na którym znajduje się plik PHP
+     * @brief Zwraca adres URL do pliku PHP z obsługą wyświetlania tekstu
+     * @retval Pełen adres URL do pliku PHP
+     */
     private String getURL(String ip) {
         return ("http://" + ip + "/" + CommonData.TEXT_LED_FILE_NAME);
     }
@@ -84,7 +96,10 @@ public class TextLedActivity extends AppCompatActivity {
     }
 
     /**
-     * @brief Wysłanie zapytania POST, aby zapalić diodę
+     * @brief Wysłanie zapytania POST, aby wyświetlić tekst
+     * @note Jeśli pole IP jest puste, to wybrany zostaje domyślny adres IP oraz wyświetlany
+     * jest odpowiedni komunikat jak Toast
+     * @param v widok - klknięty przycisk zapal
      */
     public void sendControlRequestTxt(View v)
     {
@@ -99,6 +114,7 @@ public class TextLedActivity extends AppCompatActivity {
         }
         ipAddressEditText.setText(ipAddress);
 
+        //Utworzenie zapytania typu POST, zdefiniowanie działania przy odpowiedzi oraz jej braku
         StringRequest postRequest = new StringRequest(Request.Method.POST, getURL(ipAddress),
                 new Response.Listener<String>()
                 {
@@ -117,6 +133,7 @@ public class TextLedActivity extends AppCompatActivity {
                     }
                 }
         ) {
+            //Definicja czynności do wykonania przy uzyskaniu odpowiedzi z serwera
             @Override
             protected Map<String, String> getParams() {
                 return getLedDisplayParams();
@@ -125,6 +142,7 @@ public class TextLedActivity extends AppCompatActivity {
         postRequest.setRetryPolicy(new DefaultRetryPolicy(2500, 0,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
+        //Dodanie zapytania do kolejki
         queue.add(postRequest);
     }
 

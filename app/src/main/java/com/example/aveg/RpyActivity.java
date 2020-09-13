@@ -38,41 +38,38 @@ import static java.lang.Double.isNaN;
 
 public class RpyActivity extends AppCompatActivity {
 
-    /* BEGIN config data */
+    //Ustawienie domyślnych wartości
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
     private int sampleTime = CommonData.DEFAULT_SAMPLE_TIME;
     private String rpyUnit = CommonData.DEFAULT_RPY_UNIT;
-    /* END config data */
 
-    /* BEGIN widgets */
+    //Deklaracja wykresu, oraz serii danych
     private GraphView rpyDataGraph;
-
     private LineGraphSeries<DataPoint> rollDataSeries;
     private LineGraphSeries<DataPoint> pitchDataSeries;
     private LineGraphSeries<DataPoint> yawDataSeries;
 
+    //Deklaracja listy z odczytami czujników
     private List<Double> rpyValuesList;
+
+    //Deklaracja odczytów z konkretnych czujników
     double rollRawData;
     double pitchRawData;
     double yawRawData;
 
-    //max and min ranges for x and y axes
+    //Deklaracja stałych parametrów wykresu
     private final int dataGraphMaxDataPointsNumber = 1000;
-
-
     private final double dataGraphMaxX = 25.0d;
     private final double dataGraphMinX = 0.0d;
-
     private final double rpyDataGraphMaxYRad = 3.2d;
     private final double rpyDataGraphMinYRad = -3.2d;
-
     private final double rpyDataGraphMaxYDeg = 360.0d;
     private final double rpyDataGraphMinYDeg = 0.0d;
 
+    //Deklaracja alertu przy włączeniu opcji
     private AlertDialog.Builder configAlertDialog;
 
-    /* BEGIN request timer */
-    private RequestQueue queue;
+    //Deklaracja zmiennych potrzebnych dla działania wykresu
     private Timer requestTimer;
     private long requestTimerTimeStamp = 0;
     private long requestTimerPreviousTime = -1;
@@ -80,8 +77,9 @@ public class RpyActivity extends AppCompatActivity {
     private boolean requestTimerFirstRequestAfterStop;
     private TimerTask requestTimerTask;
     private final Handler handler = new Handler();
-    /* END request timer */
+    private RequestQueue queue;
 
+    //Deklaracja interfejsu z preferencjami użytkownika
     SharedPreferences userSettings;
 
     @Override
@@ -92,59 +90,57 @@ public class RpyActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle configBundle = intent.getExtras();
 
-        /* BEGIN initialize GraphView */
-        // https://github.com/jjoe64/GraphView/wiki
-
-        //Initializing roll, pitch, yaw graph and setting ranges
-
+        //Inicjalizacja wykresu
         rpyDataGraph = (GraphView) findViewById(R.id.rpyDataGraph);
-        //Creating 3 GraphSeries
+
+        //Utworzenie wykresów liniowych, dodanie serii na graphView
         rollDataSeries = new LineGraphSeries<>(new DataPoint[]{});
         pitchDataSeries = new LineGraphSeries<>(new DataPoint[]{});
         yawDataSeries = new LineGraphSeries<>(new DataPoint[]{});
-        //Adding 3 GraphSeries to one GraphView
         rpyDataGraph.addSeries(rollDataSeries);
         rpyDataGraph.addSeries(pitchDataSeries);
         rpyDataGraph.addSeries(yawDataSeries);
-        //Setting ranges for GraphView x axis
+
+        //Parametryzacja części wspólnej wykresu(niezależne od jednostki)
         rpyDataGraph.getViewport().setXAxisBoundsManual(true);
         rpyDataGraph.getViewport().setMinX(dataGraphMinX);
         rpyDataGraph.getViewport().setMaxX(dataGraphMaxX);
-        //Setting ranges, axis titles and grid for GraphView(depends on unit)
-        setRangesAndTitles();
-        //Setting chart title
         rpyDataGraph.setTitle("Położenie kątowe (RPY)");
-
-        //Setting legend
         rollDataSeries.setTitle("Roll");
         pitchDataSeries.setTitle("Pitch");
         yawDataSeries.setTitle("Yaw");
         rpyDataGraph.getLegendRenderer().setVisible(true);
         rpyDataGraph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
-
-        //Setting GraphSeries color
         rollDataSeries.setColor(Color.RED);
         pitchDataSeries.setColor(Color.BLUE);
         yawDataSeries.setColor(Color.GREEN);
 
-        /* END initialize GraphView */
+        //Parametryzacja wykresu - zależne od jednostki
+        setRangesAndTitles();
 
+        //Inicjalizacja preferencji, ustawienie aktualnych preferencji IP oraz TP
         userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
         String ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
         int sampleTimePref = userSettings.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
         ipAddress = ipAddressPref;
         sampleTime = sampleTimePref;
 
+        //Inicjalizacja kolejki
         queue = Volley.newRequestQueue(RpyActivity.this);
-
     }
 
+    /**
+     * @brief Parametryzacja wykresu przy włączeniu widoku
+     */
     @Override
     protected void onResume() {
         setRangesAndTitles();
         super.onResume();
     }
 
+    /**
+     * @brief Ustawienie zakresów oraz tytułów w zależności od wybranej jednostki
+     */
     private void setRangesAndTitles()
     {
         if (rpyUnit.equals("rad"))
@@ -167,7 +163,12 @@ public class RpyActivity extends AppCompatActivity {
         }
     }
 
-    /* BEGIN config alert dialog */
+    /**
+     * @brief Wyświetlenie ostrzeżenia o zatrzymaniu pobierania danych przy przejściu do opcji
+     * @note Kliknięcie przycisku opcje wyświetla komunikat, który informuje użytkownika
+     * o wstrzymaniu pobierania danych, wybranie OK powoduje przejście do opcji, natomiast
+     * Anuluj wyłącza okno bez przerywania pobierania danych
+     */
     public void dialogAlertShow() {
         configAlertDialog = new AlertDialog.Builder(RpyActivity.this);
         configAlertDialog.setTitle("Pobieranie danych zostanie zatrzymane");
@@ -186,23 +187,31 @@ public class RpyActivity extends AppCompatActivity {
         configAlertDialog.setCancelable(false);
         configAlertDialog.show();
     }
-    /* END config alter dialog */
 
+    /**
+     * @brief Wczytanie intencji, informacji o IP, TP oraz jednostce
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent dataIntent) {
         super.onActivityResult(requestCode, resultCode, dataIntent);
         if ((requestCode == CommonData.REQUEST_CODE_CONFIG) && (resultCode == RESULT_OK)) {
 
-            // IoT server IP address
+            //Pobranie intencji o ustawionym IP, jednostce oraz TP w opcjach
             ipAddress = dataIntent.getStringExtra(CommonData.CONFIG_IP_ADDRESS);
             rpyUnit = dataIntent.getStringExtra(CommonData.CONFIG_RPY_UNIT);
-            // Sample time (ms)
             String sampleTimeText = dataIntent.getStringExtra(CommonData.CONFIG_SAMPLE_TIME);
             assert sampleTimeText != null;
             sampleTime = Integer.parseInt(sampleTimeText);
         }
     }
 
+    /**
+     * @brief Obsługa wciśnięcia przycisków w danym wiodku
+     * @note Wciśnięcie start oraz stop odpowiednio uruchamia oraz zatrzymuje timer,
+     * wciśnięcie opcji w przypadku działania timera wyświetla Alert, natomiast
+     * gdy nie działa timer to od razu przechodzi do wiodku opcji
+     * @param v Wciśnięty widok(np. button, textView)
+     */
     public void btnsRpy_onClick(View v) {
         switch (v.getId()) {
             case R.id.goToRpyOptionsBtn: {
@@ -226,6 +235,13 @@ public class RpyActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * @brief Zwraca adres URL do pliku z danymi o kątach
+     * @note W zależności od wybranej jednostki rad/deg zwracany jest adres konkretnego pliku
+     * na serwerze
+     * @param ip Adres IP serwera na którym znajduje się plik
+     * @retval Pełen adres URL do pliku z danymi o kątach
+     */
     private String getURL(String ip) {
         if (rpyUnit.equals("rad"))
         {
@@ -238,34 +254,41 @@ public class RpyActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * @brief Uruchamia widok opcji dla wykresów
+     * @note W intencji przekazywana jest informacja o aktualnej jednostce, IP oraz TP
+     */
     private void openRpyOptions() {
+        //Utworzenie nowej intencji oraz paczki danych
         Intent openConfigIntent = new Intent(RpyActivity.this, RpyOptionsActivity.class);
         Bundle configBundle = new Bundle();
+
+        //Umieszczenie w paczce informacji o IP, TP oraz jednostce
         configBundle.putString(CommonData.CONFIG_IP_ADDRESS, ipAddress);
         configBundle.putInt(CommonData.CONFIG_SAMPLE_TIME, sampleTime);
         configBundle.putString(CommonData.CONFIG_RPY_UNIT, rpyUnit);
+
+        //Umieszczenie paczki w intencji oraz uruchomienie activity, jako ForResult
         openConfigIntent.putExtras(configBundle);
         startActivityForResult(openConfigIntent, CommonData.REQUEST_CODE_CONFIG);
     }
 
     /**
-     * @param response IoT server JSON response as string
-     * @brief Reading raw chart data from JSON response.
-     * @retval new chart data
+     * @brief Odczytuje dane z pliku JSON o położeniu
+     * @param response Odpowiedź serwera jako JSON string
+     * @retval Dane o położeniu w postaci listy
      */
-
     private List<Double> getRawDataFromResponse(String response) {
         JSONObject jObject;
         rpyValuesList = new ArrayList<>();
 
-        // Create generic JSON object form string
         try {
             jObject = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
             return rpyValuesList;
         }
-        // Read chart data form JSON object
+
         try {
             double roll = (double)jObject.get("Roll");
             double pitch = (double)jObject.get("Pitch");
@@ -278,88 +301,25 @@ public class RpyActivity extends AppCompatActivity {
         }
         return rpyValuesList;
     }
-/*
-    private double getRawDataFromResponse_roll(String response) {
-        JSONObject jObject;
-        double x = Double.NaN;
-
-        // Create generic JSON object form string
-        try {
-            jObject = new JSONObject(response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return x;
-        }
-        // Read chart data form JSON object
-        try {
-            x = (double)jObject.get("Roll");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return x;
-    }*/
-/*
-    private double getRawDataFromResponse_pitch(String response) {
-        JSONObject jObject;
-        double x = Double.NaN;
-
-        // Create generic JSON object form string
-        try {
-            jObject = new JSONObject(response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return x;
-        }
-
-        // Read chart data form JSON object
-        try {
-            x = (double) jObject.get("Pitch");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return x;
-    }*/
-    /*
-    private double getRawDataFromResponse_yaw(String response) {
-        JSONObject jObject;
-        double x = Double.NaN;
-
-        // Create generic JSON object form string
-        try {
-            jObject = new JSONObject(response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return x;
-        }
-
-        // Read chart data form JSON object
-        try {
-            x = (double) jObject.get("Yaw");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return x;
-    }*/
 
     /**
-     * @brief Starts new 'Timer' (if currently not exist) and schedules periodic task.
+     * @brief Uruchamia nowy timer, jeśli takowy nie istnieje oraz dodaje do niego zadanie
      */
     private void startRequestTimer() {
         if (requestTimer == null) {
-            // set a new Timer
+            //Utworzenie nowego timera
             requestTimer = new Timer();
-            // initialize the TimerTask's job
+            //Inicjalizacja zadania TimerTask
             initializeRequestTimerTask();
             requestTimer.schedule(requestTimerTask, 0, sampleTime);
         }
     }
 
     /**
-     * @brief Stops request timer (if currently exist)
-     * and sets 'requestTimerFirstRequestAfterStop' flag.
+     * @brief Zatrzymuje timer, jeśli takowy istnieje
      */
     private void stopRequestTimerTask() {
-        // stop the timer, if it's not already null
+        //Zatrzymanie timera, jeśli istnieje
         if (requestTimer != null) {
             requestTimer.cancel();
             requestTimer = null;
@@ -368,7 +328,8 @@ public class RpyActivity extends AppCompatActivity {
     }
 
     /**
-     * @brief Initialize request timer period task with 'Handler' post method as 'sendGetRequest'.
+     * @brief Inicjalizacja zadania TimerTask z wykorzystaniem metody post handlera
+     * @note W procesie runnable wysyłamy cyklicznie zapytanie typu GET
      */
     private void initializeRequestTimerTask() {
         requestTimerTask = new TimerTask() {
@@ -383,15 +344,13 @@ public class RpyActivity extends AppCompatActivity {
     }
 
     /**
-     * @brief Sending GET request to IoT server using 'Volley'.
+     * @brief Wysłanie zapytania GET na serwer z wykorzystaniem Volley,
+     * w celu pobrania danych o położeniu
      */
     private void sendGetRequest()
     {
-        // Instantiate the RequestQueue with Volley
-        // https://javadoc.io/doc/com.android.volley/volley/1.1.0-rc2/index.html
         String url = getURL(ipAddress);
-
-        // Request a string response from the provided URL
+        //Utworzenie nowego zapytania typu String, zdefiniowanie co zrobić przy odpowiedzi oraz braku
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -402,65 +361,71 @@ public class RpyActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) { errorHandling(CommonData.ERROR_RESPONSE); }
                 });
 
-        // Add the request to the RequestQueue.
+        //Dodanie zapytania do kolejki
         queue.add(stringRequest);
     }
 
+    /**
+     * @brief Obsługa błędu zapytania w przypadku jego wystąpienia
+     * @param errorCode Kod błędu
+     */
     private void errorHandling(int errorCode) {
-        Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
+        //Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
         //errorToast.show();
     }
 
     /**
-     * @brief GET response handling - chart data series updated with IoT server data.
+     * @brief Obsługa uzyskanej odpowiedzi na zapytanie GET z serwera
+     * @note Dane odczytywane są z wykrozystaniem funckji getRawDataFromResponse,
+     * następnie aktualizowany jest wykres
+     * @param response Odpowiedź serwera jako JSON string
      */
     private void responseHandling(String response) {
         if (requestTimer != null) {
-            // get time stamp with SystemClock
-            long requestTimerCurrentTime = SystemClock.uptimeMillis(); // current time
+            //Pobranie informacji o aktualnym czasie
+            long requestTimerCurrentTime = SystemClock.uptimeMillis();
             requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
 
-            // get raw data from JSON response
+            //Pobranie danych z pliku JSON
             if (getRawDataFromResponse(response).size() != 0) {
                 rollRawData = getRawDataFromResponse(response).get(0);
                 pitchRawData = getRawDataFromResponse(response).get(1);
                 yawRawData = getRawDataFromResponse(response).get(2);
             }
-            // update chart
+            //Aktualizacja wykresu, gdy próbki są liczbami
             if (isNaN(rollRawData) || isNaN(pitchRawData) || isNaN(yawRawData)) {
                 errorHandling(CommonData.ERROR_NAN_DATA);
             }
             else {
 
-                // update plot series
+                //Aktualizacja serii
                 double timeStamp = requestTimerTimeStamp / 1000.0; // [sec]
-                boolean scrollGraph = (timeStamp > dataGraphMaxX);
+                boolean scrollGraph = (timeStamp > dataGraphMaxX); //Skrollowanie gdy czas jest większy niż na osi x
                 rollDataSeries.appendData(new DataPoint(timeStamp, rollRawData), scrollGraph, dataGraphMaxDataPointsNumber);
                 pitchDataSeries.appendData(new DataPoint(timeStamp, pitchRawData), scrollGraph, dataGraphMaxDataPointsNumber);
                 yawDataSeries.appendData(new DataPoint(timeStamp, yawRawData), scrollGraph, dataGraphMaxDataPointsNumber);
-                // refresh chart
+                //Odświeżanie widoku
                 rpyDataGraph.onDataChanged(true, true);
             }
 
-            // remember previous time stamp
+            //Zapamiętanie ostatniej próbki
             requestTimerPreviousTime = requestTimerCurrentTime;
         }
     }
 
 
     /**
-     * @brief Validation of client-side time stamp based on 'SystemClock'.
+     * @brief Sprawdzenie aktualnej próbki czasu po stronie klienta
+     * @param currentTime Aktualny czas
      */
     private long getValidTimeStampIncrease(long currentTime) {
-        // Right after start remember current time and return 0
+        //Zapamiętanie aktualnego czasu po starcie
         if (requestTimerFirstRequest) {
             requestTimerPreviousTime = currentTime;
             requestTimerFirstRequest = false;
             return 0;
         }
 
-        // After each stop return value not greater than sample time
-        // to avoid "holes" in the plot
         if (requestTimerFirstRequestAfterStop) {
             if ((currentTime - requestTimerPreviousTime) > sampleTime)
                 requestTimerPreviousTime = currentTime - sampleTime;
@@ -468,12 +433,11 @@ public class RpyActivity extends AppCompatActivity {
             requestTimerFirstRequestAfterStop = false;
         }
 
-        // If time difference is equal zero after start
-        // return sample time
+        //Jeśli różnica czasu jest równa 0 zwracamy TP
         if ((currentTime - requestTimerPreviousTime) == 0)
             return sampleTime;
 
-        // Return time difference between current and previous request
+        //Zwraca różnicę czasu pomiędzy aktualnym i poprzednim zapytaniem
         return (currentTime - requestTimerPreviousTime);
     }
 }

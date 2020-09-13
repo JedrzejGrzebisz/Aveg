@@ -40,32 +40,33 @@ import static java.lang.Double.isNaN;
 
 public class JoystickActivity extends AppCompatActivity {
 
-    /* BEGIN config data */
+    //Ustawienie domyślnej wartości IP
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
-    /* END config data */
 
-    /* BEGIN widgets */
+    //Deklaracja elementów interfejsu użytkownika
     private GraphView joystickDataGraph;
     private TextView centerClickNb;
 
-    private PointsGraphSeries<DataPoint> joystickDataSeries;
+    //Deklaracja liste z odczytami joysticka
     private List<Integer> joystickValuesList;
-    /* END widgets */
 
-    //max and min ranges for x and y axes
+    //Deklaracja punktu na wykresie, oraz stałych
+    private PointsGraphSeries<DataPoint> joystickDataSeries;
     private final int dataGraphMaxDataPointsNumber = 10000;
-
     private final double dataGraphMaxX = 5;
     private final double dataGraphMinX = -5;
-
     private final double rpyDataGraphMaxY = 5;
     private final double rpyDataGraphMinY = -5;
 
+    //Utworzenie handlara dla cyklicznego odczytu danych
     Handler handler = new Handler();
     Runnable runnable;
-    int delay = 100; //refreshing chart and counter
+    int delay = 100; //odświeżenie odczytu stanu joysticka
+
+    //Deklaracja interfejsu z preferencjami użytkownika
     SharedPreferences userSettings;
 
+    //Deklarcja kolejki zapytań
     private RequestQueue queue;
 
     @Override
@@ -76,50 +77,39 @@ public class JoystickActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle configBundle = intent.getExtras();
 
-        //Initializing textView of center click nb
-        centerClickNb = (TextView) findViewById(R.id.centerClickNb);
+        //Inicjalizacja wykresu oraz licznika kliknięć środkowego przycisku
+        centerClickNb = findViewById(R.id.centerClickNb);
+        joystickDataGraph = findViewById(R.id.joystickDataGraph);
 
-        /* BEGIN initialize GraphView */
-        // https://github.com/jjoe64/GraphView/wiki
-
-        //Initializing joystick graph and setting ranges
-
-        joystickDataGraph = (GraphView) findViewById(R.id.joystickDataGraph);
-        //Creating 1 PointsGraphSeries
+        //Utworzenie wykresu punktowego, dodanie serii oraz parametryzacja wykresu
         joystickDataSeries = new PointsGraphSeries<>(new DataPoint[]{});
-        //Adding 1 PointsGraphSeries to one GraphView
         joystickDataGraph.addSeries(joystickDataSeries);
-        //Setting ranges for GraphView
         joystickDataGraph.getViewport().setXAxisBoundsManual(true);
         joystickDataGraph.getViewport().setMinX(dataGraphMinX);
         joystickDataGraph.getViewport().setMaxX(dataGraphMaxX);
         joystickDataGraph.getViewport().setYAxisBoundsManual(true);
         joystickDataGraph.getViewport().setMinY(rpyDataGraphMinY);
         joystickDataGraph.getViewport().setMaxY(rpyDataGraphMaxY);
-
-        //Setting chart title
         joystickDataGraph.setTitle("Joystick");
-
-        //Setting axes titles
         joystickDataGraph.getGridLabelRenderer().setVerticalAxisTitle("y");
         joystickDataGraph.getGridLabelRenderer().setHorizontalAxisTitle("x");
-
-        //Setting GraphSeries color and shape
         joystickDataSeries.setColor(Color.GREEN);
         joystickDataSeries.setShape(PointsGraphSeries.Shape.POINT);
 
-        /* END initialize GraphView */
-
+        //Inicjalizacja preferencji, ustawienie aktualnych preferencji IP oraz TP
         userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
         String ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
         ipAddress = ipAddressPref;
 
+        //Inicjalizacja kolejki
         queue = Volley.newRequestQueue(JoystickActivity.this);
-
     }
 
     /**
-     * @note Uruchomienie widoku powoduje wysyłanie zapytania, co określony czas
+     * @brief Uruchomienie widoku powoduje wysyłanie zapytania, co określony czas
+     * @note By cyklicznie wysyłać zapytania wykorzystany jest sposób z handlerem oraz metodą
+     * postDelayed, czas próbkowania jest zdefiniowany stały, w procesie runnable wysyłamy zapytanie
+     * GET na serwer
      */
     @Override
     protected void onResume() {
@@ -133,7 +123,7 @@ public class JoystickActivity extends AppCompatActivity {
     }
 
     /**
-     * @note Zamknięcie widoku przerywa działanie handlera
+     * @brief Zamknięcie widoku przerywa działanie procesu runnable z handlera
      */
     @Override
     protected void onStop() {
@@ -142,7 +132,7 @@ public class JoystickActivity extends AppCompatActivity {
     }
 
     /**
-     * @note Naciśnięcie powrotu przerywa działanie handlera
+     * @brief Naciśnięcie powrotu przerywa działanie procesu runnable z handlera
      */
     @Override
     public void onBackPressed() {
@@ -151,31 +141,30 @@ public class JoystickActivity extends AppCompatActivity {
     }
 
     /**
-     * @param ip adres IP serwera na którym znajduje się plik
-     * @brief Zwraca adres URL do pliku z danymi
-     * @retval pełen adres URL do pliku z danymi
+     * @param ip Adres IP serwera na którym znajduje się plik
+     * @brief Zwraca adres URL do pliku z danymi o joysticku
+     * @retval Pełen adres URL do pliku z danymi o joysticku
      */
     private String getURL(String ip) {
         return ("http://" + ip + "/" + CommonData.JOYSTICK_FILE_NAME);
     }
 
     /**
-     * @param response odpowiedź serwera jako JSON string
-     * @brief Odczytuje dane z pliku JSON
-     * @retval dane o joysticku w postaci listy
+     * @brief Odczytuje dane z pliku JSON o joysticku
+     * @param response Odpowiedź serwera jako JSON string
+     * @retval Dane o joysticku w postaci listy
      */
     private List<Integer> getRawDataFromResponse(String response) {
         JSONObject jObject;
         joystickValuesList = new ArrayList<>();
 
-        // Create generic JSON object form string
         try {
             jObject = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
             return joystickValuesList;
         }
-        // Read chart data form JSON object
+
         try {
             int x = (int) jObject.get("xAxis");
             int y = (int) jObject.get("yAxis");
@@ -190,15 +179,13 @@ public class JoystickActivity extends AppCompatActivity {
     }
 
     /**
-     * @brief Sending GET request to IoT server using 'Volley'.
+     * @brief Wysłanie zapytania GET na serwer z wykorzystaniem Volley,
+     * w celu pobrania danych o położeniu
      */
     private void sendGetRequest()
     {
-        // Instantiate the RequestQueue with Volley
-        // https://javadoc.io/doc/com.android.volley/volley/1.1.0-rc2/index.html
         String url = getURL(ipAddress);
-
-        // Request a string response from the provided URL
+        //Utworzenie nowego zapytania tpyu String, zdefiniowanie co zrobić przy odpowiedzi oraz braku
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -209,22 +196,25 @@ public class JoystickActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) { errorHandling(CommonData.ERROR_RESPONSE); }
                 });
 
-        // Add the request to the RequestQueue.
+        //Dodanie zapytania do kolejki
         queue.add(stringRequest);
     }
 
     /**
-     * @param errorCode kod błędu
-     * @brief obsługa błędu w przypadku jego wystąpienia
+     * @brief Obsługa błędu zapytania w przypadku jego wystąpienia
+     * @param errorCode Kod błędu
      */
     private void errorHandling(int errorCode) {
-        Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
+        //Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
         //errorToast.show();
     }
 
     /**
-     * @param response odpowiedź serwera jako JSON string
-     * @brief GET response handling - chart data series updated with IoT server data.
+     * @brief Obsługa uzyskanej odpowiedzi na zapytanie GET z serwera
+     * @note Dane odczytywane są z wykrozystaniem funckji getRawDataFromResponse,
+     * następnie aktualizowane jest pole textview, q przypadku wykresu usuwany jest poprzedni
+     * punkt oraz ustawiany nowy
+     * @param response Odpowiedź serwera jako JSON string
      */
     private void responseHandling(String response) {
 
@@ -241,10 +231,8 @@ public class JoystickActivity extends AppCompatActivity {
         else {
 
             joystickDataSeries.appendData(new DataPoint(xAxisRawData, yAxisRawData), false, dataGraphMaxDataPointsNumber);
-            // refresh chart
             joystickDataGraph.onDataChanged(true, true);
 
-            //refresh number of center button clicks
             final String centerRawDataString = Integer.toString(centerRawData);
             centerClickNb.setText(centerRawDataString);
         }

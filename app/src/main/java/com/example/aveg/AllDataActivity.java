@@ -38,7 +38,7 @@ import static java.lang.Double.isNaN;
 
 public class AllDataActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    //Initialize default units
+    //Ustawienie domyślnych wartości
     private String temperatureUnit = CommonData.DEFAULT_TEMPERATURE_UNIT;
     private String pressureUnit = CommonData.DEFAULT_PRESSURE_UNIT;
     private String humidityUnit = CommonData.DEFAULT_HUMIDITY_UNIT;
@@ -46,39 +46,41 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
     private int sampleTime = CommonData.DEFAULT_SAMPLE_TIME;
 
+    //Deklaracja elementów interfejsu użytkownika
     private TextView temperatureValue;
     private TextView pressureValue;
     private TextView humidityValue;
     private TextView rollValue;
     private TextView pitchValue;
     private TextView yawValue;
-
     private EditText ipAdressEditText;
     private EditText sampleTimeEditText;
-
     private Button setIpAndTpAllData;
+    private Spinner temperatureSpinner;
+    private Spinner pressureSpinner;
+    private Spinner humiditySpinner;
+    private Spinner rpySpinner;
 
-    Spinner temperatureSpinner;
-    Spinner pressureSpinner;
-    Spinner humiditySpinner;
-    Spinner rpySpinner;
-
+    //Deklaracja list z odczytami czujników
     private List<Double> rpyValuesList;
     private List<Double> weatherValuesList;
 
+    //Deklaracja odczytów z konkretnych czujników
     double rollRawData;
     double pitchRawData;
     double yawRawData;
-
     double temperatureRawData;
     double pressureRawData;
     double humidityRawData;
 
+    //Utworzenie handlara dla cyklicznego odczytu danych
     Handler handler = new Handler();
     Runnable runnable;
 
+    //Deklaracja interfejsu z preferencjami użytkownika
     SharedPreferences userSettings;
 
+    //Deklarcja kolejki zapytań
     private RequestQueue queue;
 
     @Override
@@ -86,12 +88,13 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_data);
 
-        //Initialize spinners
+        //Inicjalizacja spinnerów
         temperatureSpinner = findViewById(R.id.temperatureSpinner);
         pressureSpinner = findViewById(R.id.pressureSpinner);
         humiditySpinner = findViewById(R.id.humiditySpinner);
         rpySpinner = findViewById(R.id.rpySpinner);
 
+        //Inicjalizacja pól textView z wartościami
         temperatureValue = findViewById(R.id.temperatureValue);
         pressureValue = findViewById(R.id.pressureValue);
         humidityValue = findViewById(R.id.humidityValue);
@@ -99,6 +102,7 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
         pitchValue = findViewById(R.id.pitchValue);
         yawValue = findViewById(R.id.yawValue);
 
+        //cd. inicjalizacji spinnerów
         ArrayAdapter<CharSequence> temperatureAdapter = ArrayAdapter.createFromResource(this, R.array.temperatureUnit, android.R.layout.simple_spinner_item);
         ArrayAdapter<CharSequence> pressureAdapter = ArrayAdapter.createFromResource(this, R.array.pressureUnit, android.R.layout.simple_spinner_item);
         ArrayAdapter<CharSequence> humidityAdapter = ArrayAdapter.createFromResource(this, R.array.humidityUnit, android.R.layout.simple_spinner_item);
@@ -118,24 +122,32 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
         rpySpinner.setAdapter(rpyAdapter);
         rpySpinner.setOnItemSelectedListener(this);
 
+        //Inicjalizacja preferencji, ustawienie aktualnych preferencji IP oraz TP
         userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
         String ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
         int sampleTimePref = userSettings.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
         ipAddress = ipAddressPref;
         sampleTime = sampleTimePref;
 
-        //Initialize EditText
+        //Inicjalizacja EditText, ustawienie w nich aktualnych wartości IP i TP
         ipAdressEditText = findViewById(R.id.ipAllDataEditText);
         sampleTimeEditText = findViewById(R.id.tpAllDataEditText);
         ipAdressEditText.setText(ipAddress);
         sampleTimeEditText.setText(Integer.toString(sampleTime));
 
-        //Initialize Button
+        //Inicjalizacja przycisku do ustawienia IP oraz TP
         setIpAndTpAllData = findViewById(R.id.setIpAndTpAllData);
 
+        //Inicjalizacja kolejki
         queue = Volley.newRequestQueue(AllDataActivity.this);
     }
 
+    /**
+     * @brief Odczyt wartości z pól, ustawienie nowego IP oraz TP
+     * @note Jeśli w polach edit text nic nie zostanie wpisane, to ustawiona zostaje domyślna
+     * wartość oraz pokazany zostaje komunikat w postaci Toasta
+     * @param v Kliknięty widok(np. button, textview)
+     */
     public void setTpAndIp(View v)
     {
         if (v.getId() == setIpAndTpAllData.getId())
@@ -156,6 +168,7 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
         }
     }
 
+    //Funkcja ustawia jednostkę w zależnośi od aktualnie wybranej wartości ze spinnera
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (parent.getId() == temperatureSpinner.getId())
@@ -176,13 +189,17 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
         }
     }
 
+    //Pusta funckja, która musi być zdefiniowana, ze względu na implementację interfejsu OnItemSelectedListener
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         //nothing
     }
 
     /**
-     * @note Uruchomienie widoku powoduje wysyłanie zapytania, co określony czas
+     * @brief Uruchomienie widoku powoduje wysyłanie zapytania, co określony czas
+     * @note By cyklicznie wysyłać zapytania wykorzystany jest sposób z handlerem oraz metodą
+     * postDelayed, czas próbkowania definiowany jest przez użytkownika. Wysyłane są dwa zapytania
+     * jedno odpowiedzialne za odczyt danych o pogodzie, drugie o położeniu kątowym
      */
     @Override
     protected void onResume() {
@@ -197,32 +214,39 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     }
 
     /**
-     * @note Zamknięcie widoku przerywa działanie handlera
+     * @brief Zamknięcie widoku przerywa działanie procesu runnable z handlera
      */
     @Override
     protected void onStop() {
-        handler.removeCallbacks(runnable); //stop handler when activity not visible
+        handler.removeCallbacks(runnable);
         super.onStop();
     }
 
     /**
-     * @note Naciśnięcie powrotu przerywa działanie handlera
+     * @brief Naciśnięcie powrotu przerywa działanie procesu runnable z handlera
      */
     @Override
     public void onBackPressed() {
-        handler.removeCallbacks(runnable); //stop handler when back pressed
+        handler.removeCallbacks(runnable);
         super.onBackPressed();
     }
 
     /**
-     * @param ip adres IP serwera na którym znajduje się plik
-     * @brief Zwraca adres URL do pliku z danymi
-     * @retval pełen adres URL do pliku z danymi
+     * @param ip Adres IP serwera na którym znajduje się plik
+     * @brief Zwraca adres URL do pliku z danymi o pogodzie
+     * @retval Pełen adres URL do pliku z danymi o pogodzie
      */
     private String getURLWeather(String ip) {
         return ("http://" + ip + "/" + CommonData.WEATHER_FILE_NAME);
     }
 
+    /**
+     * @brief Zwraca adres URL do pliku z danymi o kątach
+     * @note W zależności od wybranej jednostki rad/deg zwracany jest adres konkretnego pliku
+     * na serwerze
+     * @param ip Adres IP serwera na którym znajduje się plik
+     * @retval Pełen adres URL do pliku z danymi o kątach
+     */
     private String getURLRpy(String ip) {
         if (rpyUnit.equals("rad"))
         {
@@ -234,6 +258,12 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
         }
     }
 
+    /**
+     * @brief Zaokrągla wartość typu double do wybranej liczby miejsc po przecinku
+     * @param value Wartości zmiennoprzecinkowa do zaokrąglenia
+     * @param places Liczba miejsc po przecinku
+     * @retval Zaokrąglona wartość
+     */
     public static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
@@ -243,9 +273,11 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     }
 
     /**
-     * @param response odpowiedź serwera jako JSON string
-     * @brief Odczytuje dane z pliku JSON
-     * @retval dane o joysticku w postaci listy
+     * @brief Odczytuje dane z pliku JSON o pogodzie
+     * @note W bloku "try" funkcji w zależności od wybranej jednostki odczytywana jest odpowiednia
+     * wartość z pliku JSON
+     * @param response Odpowiedź serwera jako JSON string
+     * @retval Dane o pogodzie w postaci listy
      */
     private List<Double> getRawDataFromResponseWeather(String response) {
         JSONObject jObject;
@@ -287,18 +319,22 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
         return weatherValuesList;
     }
 
+    /**
+     * @brief Odczytuje dane z pliku JSON o położeniu
+     * @param response Odpowiedź serwera jako JSON string
+     * @retval Dane o położeniu w postaci listy
+     */
     private List<Double> getRawDataFromResponseRpy(String response) {
         JSONObject jObject;
         rpyValuesList = new ArrayList<>();
 
-        // Create generic JSON object form string
         try {
             jObject = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
             return rpyValuesList;
         }
-        // Read chart data form JSON object
+
         try {
             double roll = (double)jObject.get("Roll");
             double pitch = (double)jObject.get("Pitch");
@@ -313,15 +349,13 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     }
 
     /**
-     * @brief Sending GET request to IoT server using 'Volley'.
+     * @brief Wysłanie zapytania GET na serwer z wykorzystaniem Volley,
+     * w celu pobrania danych o pogodzie
      */
     private void sendGetRequestWeather()
     {
-        // Instantiate the RequestQueue with Volley
-        // https://javadoc.io/doc/com.android.volley/volley/1.1.0-rc2/index.html
         String url = getURLWeather(ipAddress);
-
-        // Request a string response from the provided URL
+        //Utworzenie nowego zapytania tpyu String, zdefiniowanie co zrobić przy odpowiedzi oraz braku
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -332,12 +366,13 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
                     public void onErrorResponse(VolleyError error) { errorHandling(CommonData.ERROR_RESPONSE); }
                 });
 
-        // Add the request to the RequestQueue.
+        //Dodanie zapytania do kolejki
         queue.add(stringRequest);
     }
 
     /**
-     * @brief Sending GET request to IoT server using 'Volley'.
+     * @brief Wysłanie zapytania GET na serwer z wykorzystaniem Volley,
+     * w celu pobrania danych o położeniu
      */
     private void sendGetRequestRpy()
     {
@@ -361,8 +396,8 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     }
 
     /**
-     * @param errorCode kod błędu
-     * @brief obsługa błędu w przypadku jego wystąpienia
+     * @brief Obsługa błędu zapytania w przypadku jego wystąpienia
+     * @param errorCode Kod błędu
      */
     private void errorHandling(int errorCode) {
         //Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
@@ -370,23 +405,23 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
     }
 
     /**
-     * @param response odpowiedź serwera jako JSON string
-     * @brief GET response handling - chart data series updated with IoT server data.
+     * @brief Obsługa uzyskanej odpowiedzi na zapytanie GET(położenie) z serwera
+     * @note Dane odczytywane są z wykrozystaniem funckji getRawDataFromResponseRpy oraz zaokrąglane
+     * do dwóch miejsc po przecinku, następnie aktualizowane są pola textView
+     * @param response Odpowiedź serwera jako JSON string
      */
     private void responseHandlingRpy(String response) {
 
-        // get raw data from JSON response
         if (getRawDataFromResponseRpy(response).size() != 0) {
             rollRawData = round(getRawDataFromResponseRpy(response).get(0), 2);
             pitchRawData = round(getRawDataFromResponseRpy(response).get(1), 2);
             yawRawData = round(getRawDataFromResponseRpy(response).get(2), 2);
         }
-        // update chart
+
         if (isNaN(rollRawData) || isNaN(pitchRawData) || isNaN(yawRawData)) {
             errorHandling(CommonData.ERROR_NAN_DATA);
         }
         else {
-            // update rpy values
             final String rollRawDataString = Double.toString(rollRawData);
             final String pitchRawDataString = Double.toString(pitchRawData);
             final String yawRawDataString = Double.toString(yawRawData);
@@ -396,6 +431,12 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
         }
     }
 
+    /**
+     * @brief Obsługa uzyskanej odpowiedzi na zapytanie GET(pogoda) z serwera
+     * @note Dane odczytywane są z wykrozystaniem funckji getRawDataFromResponseWeather oraz zaokrąglane
+     * do dwóch miejsc po przecinku, następnie aktualizowane są pola textView
+     * @param response Odpowiedź serwera jako JSON string
+     */
     private void responseHandlingWeather(String response) {
 
         // get raw data from JSON response

@@ -40,53 +40,53 @@ import static java.lang.Double.isNaN;
 
 public class WeatherActivity extends AppCompatActivity {
 
-    /* BEGIN config data */
+    //Ustawienie domyślnych wartości
     private String ipAddress = CommonData.DEFAULT_IP_ADDRESS;
     private int sampleTime = CommonData.DEFAULT_SAMPLE_TIME;
     private String temperatureUnit = CommonData.DEFAULT_TEMPERATURE_UNIT;
     private String pressureUnit = CommonData.DEFAULT_PRESSURE_UNIT;
     private String humidityUnit = CommonData.DEFAULT_HUMIDITY_UNIT;
-    /* END config data */
 
-    /* BEGIN widgets */
+    //Deklaracja wykresu, oraz serii danych
     private GraphView temperatureDataGraph;
     private GraphView pressureDataGraph;
     private GraphView humidityDataGraph;
-
     private LineGraphSeries<DataPoint> temperatureDataSeries;
     private LineGraphSeries<DataPoint> pressureDataSeries;
     private LineGraphSeries<DataPoint> humidityDataSeries;
 
+    //Deklaracja listy z odczytami czujników
     private List<Double> weatherValuesList;
+
+    //Deklaracja odczytów z konkretnych czujników
     double temperatureRawData;
     double pressureRawData;
     double humidityRawData;
 
-    //max and min ranges for x and y axes
+    //Deklaracja stałych parametrów wykresu
     private final int dataGraphMaxDataPointsNumber = 1000;
-
     private final double dataGraphMaxX = 25.0d;
     private final double dataGraphMinX = 0.0d;
-
+    //dla temperatury
     private final double temperatureDataGraphMaxYCelsius = 120.0d;
     private final double temperatureDataGraphMinYCelsius = -40.0d;
     private final double temperatureDataGraphMaxYFahrenheit = 250.0d;
     private final double temperatureDataGraphMinYFahrenheit = -50.0d;
-
+    //dla ciśnienia
     private final double pressureDataGraphMaxYhPa = 1400.0d;
     private final double pressureDataGraphMinYhPa = 200.0d;
     private final double pressureDataGraphMaxYmmHg = 1000.0d;
     private final double pressureDataGraphMinYmmHg = 0.0d;
-
+    //dla wilgotności
     private final double humidityDataGraphMaxYPercentage = 100.0d;
     private final double humidityDataGraphMinYPercentage = 0.0d;
     private final double humidityDataGraphMaxY_01 = 1.0d;
     private final double humidityDataGraphMinY_01 = 0.0d;
 
+    //Deklaracja alertu przy włączeniu opcji
     private AlertDialog.Builder configAlertDialog;
 
-    /* BEGIN request timer */
-    private RequestQueue queue;
+    //Deklaracja zmiennych potrzebnych dla działania wykresu
     private Timer requestTimer;
     private long requestTimerTimeStamp = 0;
     private long requestTimerPreviousTime = -1;
@@ -94,8 +94,9 @@ public class WeatherActivity extends AppCompatActivity {
     private boolean requestTimerFirstRequestAfterStop;
     private TimerTask requestTimerTask;
     private final Handler handler = new Handler();
-    /* END request timer */
+    private RequestQueue queue;
 
+    //Deklaracja interfejsu z preferencjami użytkownika
     SharedPreferences userSettings;
 
     @Override
@@ -106,60 +107,61 @@ public class WeatherActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle configBundle = intent.getExtras();
 
-        /* BEGIN initialize GraphView */
-        // https://github.com/jjoe64/GraphView/wiki
-
-        //Initializing temperature graph and setting ranges X axis
+        //Inicjalizacja wykresów, dodanie serii, parametryzacja częsci wspólnej(niezależnej od jednostki)
+        //dla temperatury
         temperatureDataGraph = findViewById(R.id.temperatureDataGraph);
         temperatureDataSeries = new LineGraphSeries<>(new DataPoint[]{});
         temperatureDataGraph.addSeries(temperatureDataSeries);
         temperatureDataGraph.getViewport().setXAxisBoundsManual(true);
         temperatureDataGraph.getViewport().setMinX(dataGraphMinX);
         temperatureDataGraph.getViewport().setMaxX(dataGraphMaxX);
-
-        //Initializing pressure graph and setting ranges X axis
+        temperatureDataGraph.setTitle("Temperatura");
+        //dla ciśnienia
         pressureDataGraph = findViewById(R.id.pressureDataGraph);
         pressureDataSeries = new LineGraphSeries<>(new DataPoint[]{});
         pressureDataGraph.addSeries(pressureDataSeries);
         pressureDataGraph.getViewport().setXAxisBoundsManual(true);
         pressureDataGraph.getViewport().setMinX(dataGraphMinX);
         pressureDataGraph.getViewport().setMaxX(dataGraphMaxX);
-
-        //Initializing humidity graph and setting ranges X axis
+        pressureDataGraph.setTitle("Ciśnienie");
+        //dla wilgotności
         humidityDataGraph = findViewById(R.id.humidityDataGraph);
         humidityDataSeries = new LineGraphSeries<>(new DataPoint[]{});
         humidityDataGraph.addSeries(humidityDataSeries);
         humidityDataGraph.getViewport().setXAxisBoundsManual(true);
         humidityDataGraph.getViewport().setMinX(dataGraphMinX);
         humidityDataGraph.getViewport().setMaxX(dataGraphMaxX);
-
-        //Initializing chart titles
-        temperatureDataGraph.setTitle("Temperatura");
-        pressureDataGraph.setTitle("Ciśnienie");
         humidityDataGraph.setTitle("Wilgotność");
 
-        //Setting ranges, axis titles and grid for GraphView(depends on unit)
+        //Parametryzacja wykresu - zależne od jednostki
         setRangesAndTitles();
-        /* END initialize GraphView */
 
+        //Inicjalizacja preferencji, ustawienie aktualnych preferencji IP oraz TP
         userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
         String ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
         int sampleTimePref = userSettings.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
         ipAddress = ipAddressPref;
         sampleTime = sampleTimePref;
 
+        //Inicjalizacja kolejki
         queue = Volley.newRequestQueue(WeatherActivity.this);
     }
 
+    /**
+     * @brief Parametryzacja wykresu przy włączeniu widoku
+     */
     @Override
     protected void onResume() {
         setRangesAndTitles();
         super.onResume();
     }
 
+    /**
+     * @brief Ustawienie zakresów oraz tytułów w zależności od wybranej jednostki
+     */
     private void setRangesAndTitles() {
 
-        //Common for any unit
+        //Wspólne dla wszystkich jednostek
         temperatureDataGraph.getViewport().setYAxisBoundsManual(true);
         pressureDataGraph.getViewport().setYAxisBoundsManual(true);
         humidityDataGraph.getViewport().setYAxisBoundsManual(true);
@@ -206,7 +208,12 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
-    /* BEGIN config alert dialog */
+    /**
+     * @brief Wyświetlenie ostrzeżenia o zatrzymaniu pobierania danych przy przejściu do opcji
+     * @note Kliknięcie przycisku opcje wyświetla komunikat, który informuje użytkownika
+     * o wstrzymaniu pobierania danych, wybranie OK powoduje przejście do opcji, natomiast
+     * Anuluj wyłącza okno bez przerywania pobierania danych
+     */
     public void dialogAlertShow() {
         configAlertDialog = new AlertDialog.Builder(WeatherActivity.this);
         configAlertDialog.setTitle("Pobieranie danych zostanie zatrzymane");
@@ -225,25 +232,33 @@ public class WeatherActivity extends AppCompatActivity {
         configAlertDialog.setCancelable(false);
         configAlertDialog.show();
     }
-    /* END config alter dialog */
 
+    /**
+     * @brief Wczytanie intencji, informacji o IP, TP oraz jednostkach
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent dataIntent) {
         super.onActivityResult(requestCode, resultCode, dataIntent);
         if ((requestCode == CommonData.REQUEST_CODE_CONFIG) && (resultCode == RESULT_OK)) {
 
-            // IoT server IP address
+            //Pobranie intencji o ustawionym IP, jednostkach oraz TP w opcjach
             ipAddress = dataIntent.getStringExtra(CommonData.CONFIG_IP_ADDRESS);
             temperatureUnit = dataIntent.getStringExtra(CommonData.CONFIG_TEMPERATURE_UNIT);
             pressureUnit = dataIntent.getStringExtra(CommonData.CONFIG_PRESSURE_UNIT);
             humidityUnit = dataIntent.getStringExtra(CommonData.CONFIG_HUMIDITY_UNIT);
-            // Sample time (ms)
             String sampleTimeText = dataIntent.getStringExtra(CommonData.CONFIG_SAMPLE_TIME);
             assert sampleTimeText != null;
             sampleTime = Integer.parseInt(sampleTimeText);
         }
     }
 
+    /**
+     * @brief Obsługa wciśnięcia przycisków w danym wiodku
+     * @note Wciśnięcie start oraz stop odpowiednio uruchamia oraz zatrzymuje timer,
+     * wciśnięcie opcji w przypadku działania timera wyświetla Alert, natomiast
+     * gdy nie działa timer to od razu przechodzi do wiodku opcji
+     * @param v Wciśnięty widok(np. button, textView)
+     */
     public void btns_onClick(View v) {
         switch (v.getId()) {
             case R.id.goToWOptionsBtn: {
@@ -254,9 +269,7 @@ public class WeatherActivity extends AppCompatActivity {
                 break;
             }
             case R.id.startWChartsBtn: {
-
                 startRequestTimer();
-                //sendPostRequest();
                 break;
             }
             case R.id.stopWChartsBtn: {
@@ -269,28 +282,43 @@ public class WeatherActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * @param ip Adres IP serwera na którym znajduje się plik
+     * @brief Zwraca adres URL do pliku z danymi o pogodzie
+     * @retval Pełen adres URL do pliku z danymi o pogodzie
+     */
     private String getURL(String ip) {
         return ("http://" + ip + "/" + CommonData.WEATHER_FILE_NAME);
     }
 
+    /**
+     * @brief Uruchamia widok opcji dla wykresów
+     * @note W intencji przekazywana jest informacja o aktualnych jednostkach, IP oraz TP
+     */
     private void openWeatherOptions() {
+        //Utworzenie nowej intencji oraz paczki danych
         Intent openConfigIntent = new Intent(WeatherActivity.this, WeatherOptionsActivity.class);
         Bundle configBundle = new Bundle();
+
+        //Umieszczenie w paczce informacji o IP, TP oraz jednostkach
         configBundle.putString(CommonData.CONFIG_IP_ADDRESS, ipAddress);
         configBundle.putInt(CommonData.CONFIG_SAMPLE_TIME, sampleTime);
         configBundle.putString(CommonData.CONFIG_TEMPERATURE_UNIT, temperatureUnit);
         configBundle.putString(CommonData.CONFIG_PRESSURE_UNIT, pressureUnit);
         configBundle.putString(CommonData.CONFIG_HUMIDITY_UNIT, humidityUnit);
+
+        //Umieszczenie paczki w intencji oraz uruchomienie activity, jako ForResult
         openConfigIntent.putExtras(configBundle);
         startActivityForResult(openConfigIntent, CommonData.REQUEST_CODE_CONFIG);
     }
 
     /**
-     * @param response IoT server JSON response as string
-     * @brief Reading raw chart data from JSON response.
-     * @retval new chart data
+     * @brief Odczytuje dane z pliku JSON o pogodzie
+     * @note W bloku "try" funkcji w zależności od wybranej jednostki odczytywana jest odpowiednia
+     * wartość z pliku JSON
+     * @param response Odpowiedź serwera jako JSON string
+     * @retval Dane o pogodzie w postaci listy
      */
-
     private List<Double> getRawDataFromResponse(String response) {
         JSONObject jObject;
         weatherValuesList = new ArrayList<>();
@@ -298,14 +326,13 @@ public class WeatherActivity extends AppCompatActivity {
         double pressure;
         double humidity;
 
-        // Create generic JSON object form string
         try {
             jObject = new JSONObject(response);
         } catch (JSONException e) {
             e.printStackTrace();
             return weatherValuesList;
         }
-        // Read chart data form JSON object
+
         try {
             if (temperatureUnit.equals("C"))
                 temperature = (double) jObject.get("TemperatureC");
@@ -332,24 +359,23 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     /**
-     * @brief Starts new 'Timer' (if currently not exist) and schedules periodic task.
+     * @brief Uruchamia nowy timer, jeśli takowy nie istnieje oraz dodaje do niego zadanie
      */
     private void startRequestTimer() {
         if (requestTimer == null) {
-            // set a new Timer
+            //Utworzenie nowego timera
             requestTimer = new Timer();
-            // initialize the TimerTask's job
+            //Inicjalizacja zadania TimerTask
             initializeRequestTimerTask();
             requestTimer.schedule(requestTimerTask, 0, sampleTime);
         }
     }
 
     /**
-     * @brief Stops request timer (if currently exist)
-     * and sets 'requestTimerFirstRequestAfterStop' flag.
+     * @brief Zatrzymuje timer, jeśli takowy istnieje
      */
     private void stopRequestTimerTask() {
-        // stop the timer, if it's not already null
+        //Zatrzymanie timera, jeśli istnieje
         if (requestTimer != null) {
             requestTimer.cancel();
             requestTimer = null;
@@ -358,7 +384,8 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     /**
-     * @brief Initialize request timer period task with 'Handler' post method as 'sendGetRequest'.
+     * @brief Inicjalizacja zadania TimerTask z wykorzystaniem metody post handlera
+     * @note W procesie runnable wysyłamy cyklicznie zapytanie typu GET
      */
     private void initializeRequestTimerTask() {
         requestTimerTask = new TimerTask() {
@@ -373,15 +400,13 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     /**
-     * @brief Sending GET request to IoT server using 'Volley'.
+     * @brief Wysłanie zapytania GET na serwer z wykorzystaniem Volley,
+     * w celu pobrania danych o pogodzie
      */
     private void sendGetRequest()
     {
-        // Instantiate the RequestQueue with Volley
-        // https://javadoc.io/doc/com.android.volley/volley/1.1.0-rc2/index.html
         String url = getURL(ipAddress);
-
-        // Request a string response from the provided URL
+        //Utworzenie nowego zapytania typu String, zdefiniowanie co zrobić przy odpowiedzi oraz braku
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -392,61 +417,69 @@ public class WeatherActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) { errorHandling(CommonData.ERROR_RESPONSE); }
                 });
 
-        // Add the request to the RequestQueue.
+        //Dodanie zapytania do kolejki
         queue.add(stringRequest);
     }
 
+    /**
+     * @brief Obsługa błędu zapytania w przypadku jego wystąpienia
+     * @param errorCode Kod błędu
+     */
     private void errorHandling(int errorCode) {
-        Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
-        errorToast.show();
+        //Toast errorToast = Toast.makeText(this, "ERROR: "+errorCode, Toast.LENGTH_SHORT);
+        //errorToast.show();
     }
 
     /**
-     * @brief GET response handling - chart data series updated with IoT server data.
+     * @brief Obsługa uzyskanej odpowiedzi na zapytanie GET z serwera
+     * @note Dane odczytywane są z wykrozystaniem funckji getRawDataFromResponse,
+     * następnie aktualizowany jest wykres
+     * @param response Odpowiedź serwera jako JSON string
      */
     private void responseHandling(String response) {
         if (requestTimer != null) {
-            // get time stamp with SystemClock
+            //Pobranie informacji o aktualnym czasie
             long requestTimerCurrentTime = SystemClock.uptimeMillis(); // current time
             requestTimerTimeStamp += getValidTimeStampIncrease(requestTimerCurrentTime);
 
-            // get raw data from JSON response
+            //Pobranie danych z pliku JSON
             if (getRawDataFromResponse(response).size() != 0) {
                 temperatureRawData = getRawDataFromResponse(response).get(0);
                 pressureRawData = getRawDataFromResponse(response).get(1);
                 humidityRawData = getRawDataFromResponse(response).get(2);
             }
 
-            // update chart
+            //Aktualizacja wykresu, gdy próbki są liczbami
             if (isNaN(temperatureRawData) || isNaN(pressureRawData) || isNaN(humidityRawData)) {
                 errorHandling(CommonData.ERROR_NAN_DATA);
 
             } else {
 
-                // update plot series
+                //Aktualizacja serii
                 double timeStamp = requestTimerTimeStamp / 1000.0; // [sec]
-                boolean scrollGraph = (timeStamp > dataGraphMaxX);
+                boolean scrollGraph = (timeStamp > dataGraphMaxX); //Skrollowanie gdy czas jest większy niż na osi x
                 temperatureDataSeries.appendData(new DataPoint(timeStamp, temperatureRawData), scrollGraph, dataGraphMaxDataPointsNumber);
                 pressureDataSeries.appendData(new DataPoint(timeStamp, pressureRawData), scrollGraph, dataGraphMaxDataPointsNumber);
                 humidityDataSeries.appendData(new DataPoint(timeStamp, humidityRawData), scrollGraph, dataGraphMaxDataPointsNumber);
 
-                // refresh chart
+                //Odświeżanie widoku
                 temperatureDataGraph.onDataChanged(true, true);
                 pressureDataGraph.onDataChanged(true, true);
                 humidityDataGraph.onDataChanged(true, true);
             }
 
-            // remember previous time stamp
+            //Zapamiętanie ostatniej próbki
             requestTimerPreviousTime = requestTimerCurrentTime;
         }
     }
 
 
     /**
-     * @brief Validation of client-side time stamp based on 'SystemClock'.
+     * @brief Sprawdzenie aktualnej próbki czasu po stronie klienta
+     * @param currentTime Aktualny czas
      */
     private long getValidTimeStampIncrease(long currentTime) {
-        // Right after start remember current time and return 0
+        //Zapamiętanie aktualnego czasu po starcie
         if (requestTimerFirstRequest) {
             requestTimerPreviousTime = currentTime;
             requestTimerFirstRequest = false;
@@ -462,12 +495,11 @@ public class WeatherActivity extends AppCompatActivity {
             requestTimerFirstRequestAfterStop = false;
         }
 
-        // If time difference is equal zero after start
-        // return sample time
+        //Jeśli różnica czasu jest równa 0 zwracamy TP
         if ((currentTime - requestTimerPreviousTime) == 0)
             return sampleTime;
 
-        // Return time difference between current and previous request
+        //Zwraca różnicę czasu pomiędzy aktualnym i poprzednim zapytaniem
         return (currentTime - requestTimerPreviousTime);
     }
 }

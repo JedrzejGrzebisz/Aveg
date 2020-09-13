@@ -15,26 +15,33 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity{
 
-    SharedPreferences userSettings;
+    //Deklaracja elementów interfejsu użytkownika
     EditText userInputSettingsIp;
     EditText userInputSettingsTp;
     Button setPrefBtn;
 
+    //Deklaracja wybranego IP oraz czasu próbkowania
     String ipAddressPref;
     int sampleTimePref;
+
+    //Deklaracja interfejsu z preferencjami użytkownika
+    SharedPreferences userSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        //Inicjalizacja preferencji, pól tekstowych oraz przycisku
         userSettings = getSharedPreferences("userPref", Activity.MODE_PRIVATE);
         userInputSettingsIp = findViewById(R.id.userInputSettingsIp);
         userInputSettingsTp = findViewById(R.id.userInputSettingsTp);
         setPrefBtn = findViewById(R.id.setPrefBtn);
 
+        //Wczytanie aktualnych preferencji
         loadPref();
 
+        //Zapisanie preferencji wpisanych w polach tekstowych
         setPrefBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,6 +50,9 @@ public class SettingsActivity extends AppCompatActivity{
         });
     }
 
+    /**
+     * @brief Wczytanie informacji o aktualnych preferencjach, ustawienie ich w polach editText
+     */
     private void loadPref() {
         ipAddressPref = userSettings.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
         sampleTimePref = userSettings.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
@@ -50,6 +60,10 @@ public class SettingsActivity extends AppCompatActivity{
         userInputSettingsTp.setText(Integer.toString(sampleTimePref));
     }
 
+    /**
+     * @brief Zapisanie nowych wpisanych przez użytkownika preferencji IP oraz TP
+     * @note Jeśli użytkownik zostawił puste pole, to do preferencji zapisywane są wartości domyślne
+     */
     private void savePref() {
         SharedPreferences.Editor editor = userSettings.edit();
         if (!userInputSettingsIp.getText().toString().equals("") && !userInputSettingsTp.getText().toString().equals(""))

@@ -1,10 +1,11 @@
 package com.example.aveg;
 
 public final class CommonData {
-    // activities request codes
+
+    //Kod zapytania
     public final static int REQUEST_CODE_CONFIG = 1;
 
-    // configuration info: names and default values
+    //Domyślne wykorzystywane wartości
     public final static String CONFIG_IP_ADDRESS = "ipAddress";
     public final static String DEFAULT_IP_ADDRESS = "192.168.56.22";
 
@@ -23,17 +24,16 @@ public final class CommonData {
     public final static String CONFIG_HUMIDITY_UNIT = "humidityUnit";
     public final static String DEFAULT_HUMIDITY_UNIT = "0_1";
 
-    // error codes
+    //Kody błędów
     public final static int ERROR_TIME_STAMP = -1;
     public final static int ERROR_NAN_DATA = -2;
     public final static int ERROR_RESPONSE = -3;
 
-    // IoT server data
+    //Adresy wykorzystywanych plików na serwerze
     public final static String WEATHER_FILE_NAME = "Project/weatherCondition.json";
     public final static String RPY_RAD_FILE_NAME = "Project/rpyValueRad.json";
     public final static String RPY_DEG_FILE_NAME = "Project/rpyValueDeg.json";
     public final static String JOYSTICK_FILE_NAME = "Project/joystick.json";
     public final static String SINGLE_LED_FILE_NAME = "Project/singleLedColor.php";
     public final static String TEXT_LED_FILE_NAME = "Project/textLedColor.php";
-    
 }

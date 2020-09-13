@@ -14,37 +14,37 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class WeatherOptionsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
-    /* BEGIN config widgets */
+    //Deklaracja elementów interfejsu użytkownika
     EditText ipEditText;
     EditText sampleTimeEditText;
-    private String temperatureUnit;
-    private String pressureUnit;
-    private String humidityUnit;
     Spinner temperatureUnitPicked;
     Spinner pressureUnitPicked;
     Spinner humidityUnitPicked;
-    /* END config widgets */
+
+    //Deklaracja wybranej jednostki
+    private String temperatureUnit;
+    private String pressureUnit;
+    private String humidityUnit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather_options);
 
-        // get the Intent that started this Activity
+        //Pobranie intencji oraz odczyt z niej paczki danych
         Intent intent = getIntent();
-
-        // get the Bundle that stores the data of this Activity
         Bundle configBundle = intent.getExtras();
 
+        //Inicjalizacja pól editText umieszczenie w nich informacji pobranych z intencji
+        //Definicja aktualnego IP oraz TP
         ipEditText = findViewById(R.id.userInputIP);
         String ipAddress = configBundle.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
         ipEditText.setText(ipAddress);
-
         sampleTimeEditText = findViewById(R.id.userInputTp);
         int sampleTime = configBundle.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
         sampleTimeEditText.setText(Integer.toString(sampleTime));
 
-        //Initialize spinners
+        //Inicjalizacja spinnerów
         temperatureUnitPicked = findViewById(R.id.temperatureUnitPicked);
         pressureUnitPicked = findViewById(R.id.pressureUnitPicekd);
         humidityUnitPicked = findViewById(R.id.humidityUnitPicked);
@@ -57,15 +57,19 @@ public class WeatherOptionsActivity extends AppCompatActivity implements Adapter
         pressureAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         humidityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        //Wybieranie jednostki z wykorzystaniem implementacji interfejsu
         temperatureUnitPicked.setAdapter(temperatureAdapter);
         temperatureUnitPicked.setOnItemSelectedListener(this);
         pressureUnitPicked.setAdapter(pressureAdapter);
         pressureUnitPicked.setOnItemSelectedListener(this);
         humidityUnitPicked.setAdapter(humidityAdapter);
         humidityUnitPicked.setOnItemSelectedListener(this);
-
     }
 
+    /**
+     * @brief Umieszczenie w intencji informacji o wybranym IP, TP oraz jednostce
+     * @note Jeśli pola IP oraz TP są puste to do intencji przekazane są domyślne wartości
+     */
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
@@ -86,6 +90,7 @@ public class WeatherOptionsActivity extends AppCompatActivity implements Adapter
         finish();
     }
 
+    //Funkcja ustawia jednostki w zależnośi od aktualnie wybranych wartości ze spinnerów
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (parent.getId() == temperatureUnitPicked.getId())
@@ -102,6 +107,7 @@ public class WeatherOptionsActivity extends AppCompatActivity implements Adapter
         }
     }
 
+    //Pusta funckja, która musi być zdefiniowana, ze względu na implementację interfejsu OnItemSelectedListener
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         //nothing

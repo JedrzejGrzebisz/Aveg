@@ -13,37 +13,39 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class RpyOptionsActivity extends AppCompatActivity {
 
-    /* BEGIN config widgets */
+    //Deklaracja elementów interfejsu użytkownika
     private EditText ipEditText;
     private EditText sampleTimeEditText;
+
+    //Deklarcja wybranej jednostki
     private String rpyUnit;
-    private ArrayAdapter<CharSequence> adapter;
-    /* END config widgets */
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rpy_options);
 
-        // get the Intent that started this Activity
+        //Pobranie intencji oraz odczyt z niej paczki danych
         Intent intent = getIntent();
-
-        // get the Bundle that stores the data of this Activity
         Bundle configBundle = intent.getExtras();
 
+        //Inicjalizacja pól editText umieszczenie w nich informacji pobranych z intencji
+        //Definicja aktualnego IP oraz TP
         ipEditText = findViewById(R.id.userInputRpyIP);
         String ip = configBundle.getString(CommonData.CONFIG_IP_ADDRESS, CommonData.DEFAULT_IP_ADDRESS);
         ipEditText.setText(ip);
-
         sampleTimeEditText = findViewById(R.id.userInputRpyTp);
         int tp = configBundle.getInt(CommonData.CONFIG_SAMPLE_TIME, CommonData.DEFAULT_SAMPLE_TIME);
         sampleTimeEditText.setText(Integer.toString(tp));
 
-        //Initialize spinner
+        //Inicjalizacja spinnera
         Spinner rpyUnitPicked = findViewById(R.id.rpyUnitPicked);
-        adapter = ArrayAdapter.createFromResource(this, R.array.rpyUnit, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.rpyUnit, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         rpyUnitPicked.setAdapter(adapter);
+
+        //Ustawienie wybranej ze spinnera jednostki
         rpyUnitPicked.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -57,6 +59,10 @@ public class RpyOptionsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * @brief Umieszczenie w intencji informacji o wybranym IP, TP oraz jednostce
+     * @note Jeśli pola IP oraz TP są puste to do intencji przekazane są domyślne wartości
+     */
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
