@@ -439,18 +439,16 @@ public class AllDataActivity extends AppCompatActivity implements AdapterView.On
      */
     private void responseHandlingWeather(String response) {
 
-        // get raw data from JSON response
         if (getRawDataFromResponseWeather(response).size() != 0) {
             temperatureRawData = round(getRawDataFromResponseWeather(response).get(0), 2);
             pressureRawData = round(getRawDataFromResponseWeather(response).get(1), 2);
             humidityRawData = round(getRawDataFromResponseWeather(response).get(2), 2);
         }
-        // update chart
+
         if (isNaN(temperatureRawData) || isNaN(pressureRawData) || isNaN(humidityRawData)) {
             errorHandling(CommonData.ERROR_NAN_DATA);
         }
         else {
-            // update rpy values
             final String temperatureRawDataString = Double.toString(temperatureRawData);
             final String pressureRawDataString = Double.toString(pressureRawData);
             final String humidityRawDataString = Double.toString(humidityRawData);
